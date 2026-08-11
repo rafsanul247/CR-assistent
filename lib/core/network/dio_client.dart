@@ -1,3 +1,6 @@
+import 'package:cr_app/core/storage/storage_service.dart';
+import 'package:cr_app/core/utils/api_endpoint.dart';
+import 'package:cr_app/core/utils/constant.dart';
 import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:injectable/injectable.dart';
@@ -9,14 +12,18 @@ class DioClient {
   late final Dio _dio;
 
   DioClient() {
+    final token = StorageService.get<String>(Constants.keyAuthToken);
+    
     _dio = Dio(
       BaseOptions(
+        baseUrl: ApiEndpoint.baseUrl,
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
         sendTimeout: const Duration(seconds: 30),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
         },
       ),
     );
@@ -67,12 +74,12 @@ class DioClient {
 
   /// GET request
   Future<Response> get(
-    String path, {
-    Map<String, dynamic>? queryParameters,
-    Options? options,
-    CancelToken? cancelToken,
-    ProgressCallback? onReceiveProgress,
-  }) async {
+      String path, {
+        Map<String, dynamic>? queryParameters,
+        Options? options,
+        CancelToken? cancelToken,
+        ProgressCallback? onReceiveProgress,
+      }) async {
     try {
       return await _dio.get(
         path,
@@ -88,14 +95,14 @@ class DioClient {
 
   /// POST request
   Future<Response> post(
-    String path, {
-    dynamic data,
-    Map<String, dynamic>? queryParameters,
-    Options? options,
-    CancelToken? cancelToken,
-    ProgressCallback? onSendProgress,
-    ProgressCallback? onReceiveProgress,
-  }) async {
+      String path, {
+        dynamic data,
+        Map<String, dynamic>? queryParameters,
+        Options? options,
+        CancelToken? cancelToken,
+        ProgressCallback? onSendProgress,
+        ProgressCallback? onReceiveProgress,
+      }) async {
     try {
       return await _dio.post(
         path,
@@ -113,14 +120,14 @@ class DioClient {
 
   /// PUT request
   Future<Response> put(
-    String path, {
-    dynamic data,
-    Map<String, dynamic>? queryParameters,
-    Options? options,
-    CancelToken? cancelToken,
-    ProgressCallback? onSendProgress,
-    ProgressCallback? onReceiveProgress,
-  }) async {
+      String path, {
+        dynamic data,
+        Map<String, dynamic>? queryParameters,
+        Options? options,
+        CancelToken? cancelToken,
+        ProgressCallback? onSendProgress,
+        ProgressCallback? onReceiveProgress,
+      }) async {
     try {
       return await _dio.put(
         path,
@@ -138,12 +145,12 @@ class DioClient {
 
   /// DELETE request
   Future<Response> delete(
-    String path, {
-    dynamic data,
-    Map<String, dynamic>? queryParameters,
-    Options? options,
-    CancelToken? cancelToken,
-  }) async {
+      String path, {
+        dynamic data,
+        Map<String, dynamic>? queryParameters,
+        Options? options,
+        CancelToken? cancelToken,
+      }) async {
     try {
       return await _dio.delete(
         path,
@@ -159,14 +166,14 @@ class DioClient {
 
   /// PATCH request
   Future<Response> patch(
-    String path, {
-    dynamic data,
-    Map<String, dynamic>? queryParameters,
-    Options? options,
-    CancelToken? cancelToken,
-    ProgressCallback? onSendProgress,
-    ProgressCallback? onReceiveProgress,
-  }) async {
+      String path, {
+        dynamic data,
+        Map<String, dynamic>? queryParameters,
+        Options? options,
+        CancelToken? cancelToken,
+        ProgressCallback? onSendProgress,
+        ProgressCallback? onReceiveProgress,
+      }) async {
     try {
       return await _dio.patch(
         path,

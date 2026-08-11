@@ -1,75 +1,54 @@
-import 'features/settings/data/data_sources/settings_data_source.dart';
-import 'features/settings/data/repositories/settings_repository_implement.dart';
-import 'features/settings/domain/repositories/settings_repository.dart';
-import 'features/settings/domain/usecases/settings_usecase.dart';
-
-import 'features/chat/data/data_sources/chat_data_source.dart';
-import 'features/chat/data/repositories/chat_repository_implement.dart';
-import 'features/chat/domain/repositories/chat_repository.dart';
-import 'features/chat/domain/usecases/chat_usecase.dart';
-
-import 'features/semesters/data/data_sources/semesters_data_source.dart';
-import 'features/semesters/data/repositories/semesters_repository_implement.dart';
-import 'features/semesters/domain/repositories/semesters_repository.dart';
-import 'features/semesters/domain/usecases/semesters_usecase.dart';
-
-import 'features/home/data/data_sources/home_data_source.dart';
-import 'features/home/data/repositories/home_repository_implement.dart';
-import 'features/home/domain/repositories/home_repository.dart';
-import 'features/home/domain/usecases/home_usecase.dart';
-
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
+import 'package:cr_app/core/network/dio_client.dart';
+import 'package:cr_app/core/network/network_info.dart';
+
+// Auth Feature
+import 'package:cr_app/features/auth/data/data_sources/auth_data_source.dart';
+import 'package:cr_app/features/auth/data/repositories/auth_repository_implement.dart';
+import 'package:cr_app/features/auth/domain/repositories/auth_repository.dart';
+import 'package:cr_app/features/auth/domain/usecases/auth_usecase.dart';
+import 'package:cr_app/features/auth/presentation/manager/controller/auth_controller.dart';
+
+// Semesters Feature
+import 'package:cr_app/features/semesters/data/data_sources/semesters_data_source.dart';
+import 'package:cr_app/features/semesters/data/repositories/semesters_repository_implement.dart';
+import 'package:cr_app/features/semesters/domain/repositories/semesters_repository.dart';
+import 'package:cr_app/features/semesters/domain/usecases/semesters_usecase.dart';
+import 'package:cr_app/features/semesters/presentation/manager/controller/semesters_controller.dart';
 
 final sl = GetIt.instance;
 
 Future<void> init() async {
-  await _setUpSettings();
+  // Core
+  sl.registerLazySingleton(() => Connectivity());
+  sl.registerLazySingleton(() => DioClient());
+  sl.registerLazySingleton(() => NetworkInfo(sl()));
 
-  await _setUpChat();
+  // Auth Feature
+  sl.registerLazySingleton<AuthDataSource>(
+    () => AuthDataSourceImplement(dioClient: sl()),
+  );
+  sl.registerLazySingleton<AuthRepository>(
+    () => AuthRepositoryImplement(
+      dataSource: sl(),
+      networkInfo: sl(),
+      dioClient: sl(),
+    ),
+  );
+  sl.registerLazySingleton(() => AuthUseCase(repository: sl()));
+  sl.registerLazySingleton(() => AuthController());
 
-  await _setUpSemesters();
-
-  await _setUpHome();
-
-  // Register your dependencies here.
-}
-
-Future<void> _setUpHome() async {  // Repositories
-  sl.registerLazySingleton<HomeRepository>(() => HomeRepositoryImplement(dataSource:sl()));
-
-  // Use Cases
-  sl.registerLazySingleton(() => HomeUseCase(repository: sl()));
-
-  // Data Sources
-  sl.registerLazySingleton<HomeDataSource>(() => HomeDataSourceImplement());
-}
-
-Future<void> _setUpSemesters() async {  // Repositories
-  sl.registerLazySingleton<SemestersRepository>(() => SemestersRepositoryImplement(dataSource:sl()));
-
-  // Use Cases
+  // Semesters Feature
+  sl.registerLazySingleton<SemestersDataSource>(
+    () => SemestersDataSourceImplement(dioClient: sl()),
+  );
+  sl.registerLazySingleton<SemestersRepository>(
+    () => SemestersRepositoryImplement(
+      dataSource: sl(),
+      networkInfo: sl(),
+    ),
+  );
   sl.registerLazySingleton(() => SemestersUseCase(repository: sl()));
-
-  // Data Sources
-  sl.registerLazySingleton<SemestersDataSource>(() => SemestersDataSourceImplement());
-}
-
-Future<void> _setUpChat() async {  // Repositories
-  sl.registerLazySingleton<ChatRepository>(() => ChatRepositoryImplement(dataSource:sl()));
-
-  // Use Cases
-  sl.registerLazySingleton(() => ChatUseCase(repository: sl()));
-
-  // Data Sources
-  sl.registerLazySingleton<ChatDataSource>(() => ChatDataSourceImplement());
-}
-
-Future<void> _setUpSettings() async {  // Repositories
-  sl.registerLazySingleton<SettingsRepository>(() => SettingsRepositoryImplement(dataSource:sl()));
-
-  // Use Cases
-  sl.registerLazySingleton(() => SettingsUseCase(repository: sl()));
-
-  // Data Sources
-  sl.registerLazySingleton<SettingsDataSource>(() => SettingsDataSourceImplement());
+  sl.registerLazySingleton(() => SemestersController());
 }

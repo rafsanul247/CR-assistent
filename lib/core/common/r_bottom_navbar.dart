@@ -1,4 +1,5 @@
 import 'package:cr_app/core/constants/colors.dart';
+import 'package:cr_app/features/chat/presentation/views/chat_screen.dart';
 import 'package:cr_app/features/home/presentation/views/home_screen.dart';
 import 'package:cr_app/features/settings/presentation/views/settings_screen.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,7 @@ class _MainScreenState extends State<MainScreen> {
   // READ-ONLY STATIC COMPONENT STACK CONTAINING SCENE DESTINATIONS
   final List<Widget> _screens = const [
     HomeScreen(),
-    SettingsScreen(),
+    ChatScreen(),
     SettingsScreen(),
 
   ];

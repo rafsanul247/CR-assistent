@@ -2,7 +2,7 @@ class UTexts {
   // private Constructor
   UTexts._();
 
-  static const String learnFlutter = "Learn Flutter";
+  static const String appTitle = "CR Assistant";
   static const String email = "Email";
   static const String password = "Password";
   static const String login = "Login";

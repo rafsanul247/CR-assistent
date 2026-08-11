@@ -4,6 +4,28 @@ import 'package:flutter/widgets.dart';
 
 class Assets {
   Assets._();
+
+  static const $AssetsIconsGen icons = $AssetsIconsGen();
+  static const $AssetsImagesGen images = $AssetsImagesGen();
+}
+
+class $AssetsIconsGen {
+  const $AssetsIconsGen();
+
+  final AssetGenImage appIconBlack = const AssetGenImage(
+    'assets/icons/app_icon_black.png',
+  );
+  final AssetGenImage appIconWhite = const AssetGenImage(
+    'assets/icons/app_icon_white.png',
+  );
+}
+
+class $AssetsImagesGen {
+  const $AssetsImagesGen();
+
+  final AssetGenImage rafsanProfile = const AssetGenImage(
+    'assets/images/rafsan_profile.jpg',
+  );
 }
 
 class AssetGenImage {

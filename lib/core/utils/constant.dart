@@ -6,7 +6,7 @@ class Constants {
 
   // TODO: Add your app constants here
   // Example:
-  // static const String appName = 'My App';
+  static const String appName = 'CR Assistant';
   // static const String apiBaseUrl = 'https://api.example.com';
   // static const int maxRetryAttempts = 3;
   // static const Duration connectionTimeout = Duration(seconds: 30);
@@ -20,17 +20,12 @@ class Constants {
   // static const String apiSecret = 'your_api_secret_here';
 
   // Storage Keys
-  // static const String keyUserId = 'user_id';
-  // static const String keyAuthToken = 'auth_token';
-  // static const String keyThemeMode = 'theme_mode';
+  static const String keyAuthToken = 'auth_token';
+  static const String keyUserId = 'user_id';
+  static const String keyUserRole = 'user_role';
+  static const String keyUserName = 'user_name';
+  static const String keyUserEmail = 'user_email';
 
-  // UI Constants
-  // static const double defaultPadding = 16.0;
-  // static const double defaultBorderRadius = 8.0;
-  // static const int maxCharacters = 255;
-
-  // Network Constants
-  // static const int connectTimeout = 30;
-  // static const int receiveTimeout = 30;
-  // static const int sendTimeout = 30;
+  // API Keys
+  static const String geminiApiKey = 'AQ.Ab8RN6KDul-0N7iK28GakMCQRtglNj5iLlUgtToJg33tEwsqmQ';
 }
