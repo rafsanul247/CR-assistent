@@ -1,5 +1,4 @@
 import 'package:cr_app/core/constants/colors.dart';
-import 'package:cr_app/features/chat/presentation/views/chat_screen.dart';
 import 'package:cr_app/features/home/presentation/views/home_screen.dart';
 import 'package:cr_app/features/notice/presentation/views/notice_screen.dart';
 import 'package:cr_app/features/settings/presentation/views/settings_screen.dart';
@@ -30,7 +29,6 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _screens = const [
     HomeScreen(),
     NoticeScreen(),
-    ChatScreen(),
     SettingsScreen(),
 
   ];
@@ -80,10 +78,6 @@ class _MainScreenState extends State<MainScreen> {
                 const BottomNavigationBarItem(
                   icon: FaIcon(FontAwesomeIcons.house),
                   label: 'Home',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.chat_bubble),
-                  label: 'Chat',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.notifications_active),

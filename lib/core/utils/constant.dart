@@ -27,5 +27,4 @@ class Constants {
   static const String keyUserEmail = 'user_email';
 
   // API Keys
-  static const String geminiApiKey = 'AQ.Ab8RN6KDul-0N7iK28GakMCQRtglNj5iLlUgtToJg33tEwsqmQ';
 }
