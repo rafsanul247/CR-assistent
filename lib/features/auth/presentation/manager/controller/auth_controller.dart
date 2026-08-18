@@ -1,0 +1,92 @@
+import 'package:cr_app/core/storage/storage_service.dart';
+import 'package:cr_app/core/utils/constant.dart';
+import 'package:cr_app/core/router/app_router.dart';
+import 'package:cr_app/features/auth/domain/entities/auth_entity.dart';
+import 'package:cr_app/features/auth/domain/usecases/auth_usecase.dart';
+import 'package:cr_app/injection.dart';
+import 'package:get/get.dart';
+
+class AuthController extends GetxController {
+  final AuthUseCase _useCase = sl<AuthUseCase>();
+
+  final Rxn<UserEntity> user = Rxn<UserEntity>();
+  final RxBool isLoading = false.obs;
+
+  bool get isCR {
+    final role = user.value?.role ?? StorageService.get<String>(Constants.keyUserRole);
+    return role?.toUpperCase() == 'CR';
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+    _loadUserFromStorage();
+  }
+
+  void _loadUserFromStorage() {
+    final token = StorageService.get<String>(Constants.keyAuthToken);
+    final role = StorageService.get<String>(Constants.keyUserRole);
+    final id = StorageService.get<int>(Constants.keyUserId);
+
+    if (token != null && role != null && id != null) {
+      user.value = UserEntity(
+        id: id,
+        username: '',
+        email: '',
+        role: role,
+        batchId: 0,
+        deptName: '',
+        batchName: '',
+        universityName: '',
+      );
+    }
+  }
+
+  Future<void> login(String email, String password) async {
+    isLoading.value = true;
+    final result = await _useCase.login(email: email, password: password);
+    result.fold(
+      (failure) => Get.snackbar('Error', failure.message),
+      (userData) {
+        user.value = userData;
+        AppRouter.go('/main'); 
+      },
+    );
+    isLoading.value = false;
+  }
+
+  Future<void> register({
+    required String username,
+    required String email,
+    required String password,
+    required String universityName,
+    required String deptName,
+    required String batchName,
+    required bool isCR,
+  }) async {
+    isLoading.value = true;
+    final result = await _useCase.register(
+      username: username,
+      email: email,
+      password: password,
+      universityName: universityName,
+      deptName: deptName,
+      batchName: batchName,
+      isCR: isCR,
+    );
+    result.fold(
+      (failure) => Get.snackbar('Error', failure.message),
+      (userData) {
+        user.value = userData;
+        AppRouter.go('/main');
+      },
+    );
+    isLoading.value = false;
+  }
+
+  Future<void> logout() async {
+    await _useCase.logout();
+    user.value = null;
+    AppRouter.go('/');
+  }
+}
