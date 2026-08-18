@@ -136,7 +136,7 @@ class _ResourceListViewState extends State<ResourceListView> {
                 );
                 Navigator.pop(context);
               }
-            },
+            }, 
             child: const Text("Upload"),
           ),
         ],

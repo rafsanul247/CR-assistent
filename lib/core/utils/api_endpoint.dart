@@ -1,7 +1,7 @@
 class ApiEndpoint {
   ApiEndpoint._();
 
-  static const String baseUrl = 'http://localhost:3000/api'; // Android Emulator: 'http://10.0.2.2:3000/api'
+  static const String baseUrl = 'https://cr-assistant-backend-1.onrender.com/api'; // Android Emulator: 'http://10.0.2.2:3000/api'
 
   // Auth
   static const String register = '/auth/register';

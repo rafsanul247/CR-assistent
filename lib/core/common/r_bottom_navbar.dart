@@ -1,6 +1,7 @@
 import 'package:cr_app/core/constants/colors.dart';
 import 'package:cr_app/features/chat/presentation/views/chat_screen.dart';
 import 'package:cr_app/features/home/presentation/views/home_screen.dart';
+import 'package:cr_app/features/notice/presentation/views/notice_screen.dart';
 import 'package:cr_app/features/settings/presentation/views/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -28,6 +29,7 @@ class _MainScreenState extends State<MainScreen> {
   // READ-ONLY STATIC COMPONENT STACK CONTAINING SCENE DESTINATIONS
   final List<Widget> _screens = const [
     HomeScreen(),
+    NoticeScreen(),
     ChatScreen(),
     SettingsScreen(),
 
@@ -54,35 +56,45 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ],
         ),
-        child: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(24),
-            topRight: Radius.circular(24),
-          ),
-          child: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            selectedItemColor: UColors.primary,
-            unselectedItemColor: Colors.grey,
-            currentIndex: _currentIndex, // BINDS ACTIVE INDEX TO RE-RENDER NAV ITEMS STATE
-            onTap: (index) {
-              setState(() {
-                _currentIndex = index; // STATE MUTATION TRIGGERS ONLY LOCAL FLUSH RENDER
-              });
-            },
-            items: [
-              const BottomNavigationBarItem(
-                icon: FaIcon(FontAwesomeIcons.house),
-                label: 'Home',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.chat_bubble),
-                label: 'Chat',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.settings),
-                label: "Settings",
-              ),
-            ],
+        child: Padding(
+          padding: const EdgeInsets.only(left: 10, right: 10, bottom: 14),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(50),
+              topRight: Radius.circular(50),
+              bottomRight: Radius.circular(50),
+              bottomLeft: Radius.circular(50)
+            ),
+            child: BottomNavigationBar(
+              backgroundColor: Colors.white.withValues(alpha: 0.8),
+              type: BottomNavigationBarType.fixed,
+              selectedItemColor: UColors.primary,
+              unselectedItemColor: UColors.darkerGrey,
+              currentIndex: _currentIndex, // BINDS ACTIVE INDEX TO RE-RENDER NAV ITEMS STATE
+              onTap: (index) {
+                setState(() {
+                  _currentIndex = index; // STATE MUTATION TRIGGERS ONLY LOCAL FLUSH RENDER
+                });
+              },
+              items: [
+                const BottomNavigationBarItem(
+                  icon: FaIcon(FontAwesomeIcons.house),
+                  label: 'Home',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.chat_bubble),
+                  label: 'Chat',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.notifications_active),
+                  label: 'Notice',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.settings),
+                  label: "Settings",
+                ),
+              ],
+            ),
           ),
         ),
       ),

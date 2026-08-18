@@ -1,3 +1,8 @@
+import 'features/notice/data/data_sources/notice_data_source.dart';
+import 'features/notice/data/repositories/notice_repository_implement.dart';
+import 'features/notice/domain/repositories/notice_repository.dart';
+import 'features/notice/domain/usecases/notice_usecase.dart';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:cr_app/core/network/dio_client.dart';
@@ -20,6 +25,8 @@ import 'package:cr_app/features/semesters/presentation/manager/controller/semest
 final sl = GetIt.instance;
 
 Future<void> init() async {
+  await _setUpNotice();
+
   // Core
   sl.registerLazySingleton(() => Connectivity());
   sl.registerLazySingleton(() => DioClient());
@@ -51,4 +58,14 @@ Future<void> init() async {
   );
   sl.registerLazySingleton(() => SemestersUseCase(repository: sl()));
   sl.registerLazySingleton(() => SemestersController());
+}
+
+Future<void> _setUpNotice() async {  // Repositories
+  sl.registerLazySingleton<NoticeRepository>(() => NoticeRepositoryImplement(dataSource:sl()));
+
+  // Use Cases
+  sl.registerLazySingleton(() => NoticeUseCase(repository: sl()));
+
+  // Data Sources
+  sl.registerLazySingleton<NoticeDataSource>(() => NoticeDataSourceImplement());
 }
