@@ -2,6 +2,7 @@ import 'package:cr_app/features/auth/presentation/manager/controller/auth_contro
 import 'package:cr_app/features/semesters/presentation/manager/controller/semesters_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ResourceListView extends StatelessWidget {
   final int subjectId;
@@ -173,13 +174,17 @@ class _ResourceCard extends StatelessWidget {
           ),
         ),
         trailing: IconButton.filledTonal(
-          onPressed: () {
-            Get.snackbar(
-              'Download Started',
-              'Downloading ${resource.title}...',
-              snackPosition: SnackPosition.BOTTOM,
-              margin: const EdgeInsets.all(16),
-            );
+          onPressed: () async {
+            final Uri url = Uri.parse(resource.url);
+            if (await canLaunchUrl(url)) {
+              await launchUrl(url, mode: LaunchMode.externalApplication);
+            } else {
+              Get.snackbar(
+                'Error',
+                'Could not open the file.',
+                snackPosition: SnackPosition.BOTTOM,
+              );
+            }
           },
           icon: const Icon(Icons.download_rounded, size: 20),
         ),
