@@ -50,7 +50,7 @@ class _SubjectListViewState extends State<SubjectListView> {
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: const Icon(Iconsax.arrow_left_2, color: Colors.white, size: 20),
+          icon: const Icon(Iconsax.arrow_left_2, color: Colors.white, size: 26),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(

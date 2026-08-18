@@ -2,6 +2,7 @@ import 'package:cr_app/features/auth/presentation/manager/controller/auth_contro
 import 'package:cr_app/features/semesters/presentation/manager/controller/semesters_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ResourceListView extends StatelessWidget {
@@ -28,6 +29,10 @@ class ResourceListView extends StatelessWidget {
     return Scaffold(
       backgroundColor: theme.colorScheme.surfaceContainerLowest,
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Iconsax.arrow_left_2, color: Colors.white, size: 26),
+          onPressed: () => Navigator.pop(context),
+        ),
         title: Text(
           subjectName,
           style: const TextStyle(fontWeight: FontWeight.bold),
