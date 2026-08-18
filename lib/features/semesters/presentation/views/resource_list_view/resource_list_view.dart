@@ -3,7 +3,7 @@ import 'package:cr_app/features/semesters/presentation/manager/controller/semest
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class ResourceListView extends StatefulWidget {
+class ResourceListView extends StatelessWidget {
   final int subjectId;
   final String subjectName;
 
@@ -14,26 +14,26 @@ class ResourceListView extends StatefulWidget {
   });
 
   @override
-  State<ResourceListView> createState() => _ResourceListViewState();
-}
-
-class _ResourceListViewState extends State<ResourceListView> {
-  final SemestersController controller = Get.find<SemestersController>();
-  final AuthController authController = Get.find<AuthController>();
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.fetchResources(widget.subjectId);
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final SemestersController controller = Get.find<SemestersController>();
+    final AuthController authController = Get.find<AuthController>();
+    final theme = Theme.of(context);
+
+    // Initial trigger after frame rendering
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.fetchResources(subjectId);
+    });
+
     return Scaffold(
+      backgroundColor: theme.colorScheme.surfaceContainerLowest,
       appBar: AppBar(
-        title: Text(widget.subjectName),
+        title: Text(
+          subjectName,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       body: SafeArea(
         child: Obx(() {
@@ -42,40 +42,39 @@ class _ResourceListViewState extends State<ResourceListView> {
           }
 
           if (controller.errorMessage.isNotEmpty) {
-            return Center(child: Text(controller.errorMessage.value));
+            return _ErrorView(
+              message: controller.errorMessage.value,
+              onRetry: () => controller.fetchResources(subjectId),
+            );
           }
 
           if (controller.resources.isEmpty) {
-            return const Center(child: Text("No resources uploaded for this subject"));
+            return const _EmptyResourcesView();
           }
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Padding(
-                padding: EdgeInsets.all(16.0),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
                 child: Text(
-                  "FILES",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  "RESOURCE FILES",
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                  ),
                 ),
               ),
               Expanded(
-                child: ListView.builder(
+                child: ListView.separated(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   itemCount: controller.resources.length,
+                  separatorBuilder: (context, index) =>
+                  const SizedBox(height: 10),
                   itemBuilder: (context, index) {
-                    final resource = controller.resources[index];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                      child: ListTile(
-                        title: Text(resource.title),
-                        subtitle: Text(resource.type),
-                        leading: const Icon(Icons.picture_as_pdf, color: Colors.red),
-                        trailing: const Icon(Icons.download),
-                        onTap: () {
-                          // TODO: Implement file download/view
-                          Get.snackbar('Download', 'Downloading ${resource.title}...');
-                        },
-                      ),
+                    return _ResourceCard(
+                      resource: controller.resources[index],
                     );
                   },
                 ),
@@ -85,61 +84,282 @@ class _ResourceListViewState extends State<ResourceListView> {
         }),
       ),
       floatingActionButton: Obx(() {
-        if (authController.isCR) {
-          return FloatingActionButton.extended(
-            onPressed: () {
-              _showUploadDialog(context);
-            },
-            label: const Text("Upload Note"),
-            icon: const Icon(Icons.upload_file),
-          );
-        }
-        return const SizedBox.shrink();
+        if (!authController.isCR) return const SizedBox.shrink();
+
+        return FloatingActionButton.extended(
+          onPressed: () => _showUploadBottomSheet(context, controller),
+          elevation: 2,
+          icon: const Icon(Icons.upload_file_rounded),
+          label: const Text("Upload Note"),
+        );
       }),
     );
   }
 
-  void _showUploadDialog(BuildContext context) {
-    final TextEditingController titleController = TextEditingController();
-    final TextEditingController urlController = TextEditingController(); // Simple URL input for now
-
-    showDialog(
+  void _showUploadBottomSheet(
+      BuildContext context, SemestersController controller) {
+    showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Upload New Resource"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: titleController,
-              decoration: const InputDecoration(hintText: "Title (e.g. Class PDF 1)"),
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => _UploadBottomSheet(
+        subjectId: subjectId,
+        controller: controller,
+      ),
+    );
+  }
+}
+
+// Sub-Widget: Individual Resource File Card
+class _ResourceCard extends StatelessWidget {
+  final dynamic resource;
+
+  const _ResourceCard({required this.resource});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final String type = (resource.type ?? '').toLowerCase();
+
+    // Contextual icon and styling based on file type
+    IconData iconData = Icons.insert_drive_file_rounded;
+    Color iconBg = theme.colorScheme.primaryContainer;
+    Color iconColor = theme.colorScheme.primary;
+
+    if (type.contains('pdf')) {
+      iconData = Icons.picture_as_pdf_rounded;
+      iconBg = theme.colorScheme.errorContainer;
+      iconColor = theme.colorScheme.error;
+    } else if (type.contains('image') || type.contains('jpg') || type.contains('png')) {
+      iconData = Icons.image_rounded;
+      iconBg = theme.colorScheme.tertiaryContainer;
+      iconColor = theme.colorScheme.tertiary;
+    }
+
+    return Card(
+      elevation: 0,
+      color: theme.colorScheme.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+        ),
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        leading: Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: iconBg,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(iconData, color: iconColor, size: 24),
+        ),
+        title: Text(
+          resource.title,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Text(
+            resource.type.toString().toUpperCase(),
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
             ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: urlController,
-              decoration: const InputDecoration(hintText: "File URL"),
+          ),
+        ),
+        trailing: IconButton.filledTonal(
+          onPressed: () {
+            Get.snackbar(
+              'Download Started',
+              'Downloading ${resource.title}...',
+              snackPosition: SnackPosition.BOTTOM,
+              margin: const EdgeInsets.all(16),
+            );
+          },
+          icon: const Icon(Icons.download_rounded, size: 20),
+        ),
+      ),
+    );
+  }
+}
+
+// Sub-Widget: Modern Upload Bottom Sheet
+class _UploadBottomSheet extends StatelessWidget {
+  final int subjectId;
+  final SemestersController controller;
+
+  const _UploadBottomSheet({
+    required this.subjectId,
+    required this.controller,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final titleController = TextEditingController();
+    final urlController = TextEditingController();
+
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 24,
+        right: 24,
+        top: 16,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.outlineVariant,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            "Upload New Resource",
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 20),
+          TextField(
+            controller: titleController,
+            decoration: InputDecoration(
+              labelText: "Title",
+              hintText: "e.g., Lecture 1 Notes",
+              prefixIcon: const Icon(Icons.title_rounded),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: urlController,
+            decoration: InputDecoration(
+              labelText: "File URL",
+              hintText: "https://example.com/file.pdf",
+              prefixIcon: const Icon(Icons.link_rounded),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: FilledButton(
+              onPressed: () {
+                if (titleController.text.isNotEmpty &&
+                    urlController.text.isNotEmpty) {
+                  controller.uploadResource(
+                    subjectId,
+                    titleController.text,
+                    urlController.text,
+                  );
+                  Navigator.pop(context);
+                }
+              },
+
+              child: const Text("Upload"),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Sub-Widget: Empty State Display
+class _EmptyResourcesView extends StatelessWidget {
+  const _EmptyResourcesView();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.folder_off_outlined,
+            size: 64,
+            color: theme.colorScheme.outline,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            "No Resources Found",
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            "There are no uploaded files for this subject yet.",
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Sub-Widget: Error State Display
+class _ErrorView extends StatelessWidget {
+  final String message;
+  final VoidCallback onRetry;
+
+  const _ErrorView({
+    required this.message,
+    required this.onRetry,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline_rounded,
+              size: 56,
+              color: theme.colorScheme.error,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.colorScheme.error,
+              ),
+            ),
+            const SizedBox(height: 16),
+            OutlinedButton.icon(
+              onPressed: onRetry,
+              icon: const Icon(Icons.refresh_rounded),
+              label: const Text("Retry"),
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel"),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (titleController.text.isNotEmpty && urlController.text.isNotEmpty) {
-                controller.uploadResource(
-                  widget.subjectId,
-                  titleController.text,
-                  urlController.text,
-                );
-                Navigator.pop(context);
-              }
-            }, 
-            child: const Text("Upload"),
-          ),
-        ],
       ),
     );
   }
