@@ -1,7 +1,9 @@
 import 'package:cr_app/core/common/r_bottom_navbar.dart';
 import 'package:cr_app/core/storage/storage_service.dart';
 import 'package:cr_app/core/utils/constant.dart';
+import 'package:cr_app/features/auth/presentation/views/class_code/class_code.dart';
 import 'package:cr_app/features/auth/presentation/views/login_screen/login_screen.dart';
+import 'package:cr_app/features/auth/presentation/views/registration_screen/registration_screen.dart';
 import 'package:cr_app/features/semesters/presentation/views/subject_list_view/subject_list_view.dart';
 import 'package:cr_app/features/semesters/presentation/views/resource_list_view/resource_list_view.dart';
 import 'package:cr_app/features/settings/presentation/views/about_cr_assistant/about_cr_assistant.dart';
@@ -17,18 +19,16 @@ class AppRouter {
     initialLocation: '/main',
     debugLogDiagnostics: false,
 
-    // Runs before every navigation — decides whether to redirect
     redirect: (context, state) {
       final bool loggedIn = StorageService.containsKey(Constants.keyAuthToken);
-      final bool goingToAuth = state.matchedLocation == '/';
+      final bool goingToAuth = state.matchedLocation == '/' || 
+                               state.matchedLocation == '/register' || 
+                               state.matchedLocation == '/class-code';
 
-      // Not logged in, trying to reach a protected page → send to login
       if (!loggedIn && !goingToAuth) return '/';
-
-      // Already logged in, but trying to open login screen → send to main
       if (loggedIn && goingToAuth) return '/main';
 
-      return null; // No redirect needed
+      return null;
     },
 
     routes: [
@@ -36,6 +36,16 @@ class AppRouter {
         path: '/',
         name: 'login',
         builder: (context, state) => LoginScreen(),
+      ),
+      GoRoute(
+        path: '/register',
+        name: 'register',
+        builder: (context, state) => RegistrationScreen(),
+      ),
+      GoRoute(
+        path: '/class-code',
+        name: 'class-code',
+        builder: (context, state) => const ClassCode(),
       ),
       GoRoute(
         path: '/main',
@@ -64,8 +74,6 @@ class AppRouter {
           );
         },
       ),
-
-      //ABout CR
       GoRoute(
         path: '/about',
         name: 'about',

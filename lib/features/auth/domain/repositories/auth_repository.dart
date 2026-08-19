@@ -16,9 +16,12 @@ abstract class AuthRepository {
     required String deptName,
     required String batchName,
     required bool isCR,
+    String? classCode,
   });
 
   Future<Either<Failure, void>> logout();
 
   Future<bool> isLoggedIn();
+
+  Future<Either<Failure, String>> getMyClassCode();
 }

@@ -1,4 +1,7 @@
+import 'package:cr_app/core/common/input_text_field.dart';
+import 'package:cr_app/features/auth/presentation/views/registration_screen/controller/registration_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class UFullNameField extends StatelessWidget {
@@ -8,11 +11,12 @@ class UFullNameField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      decoration: InputDecoration(
-        labelText: "Full Name",
-        prefixIcon: Icon(LucideIcons.user),
-      ),
+    final controller = Get.find<RegistrationController>();
+    return UTextField(
+      controller: controller.usernameController,
+      validator: controller.usernameValidate,
+      labelText: "Full Name",
+      prefixIcon: const Icon(LucideIcons.user),
     );
   }
 }

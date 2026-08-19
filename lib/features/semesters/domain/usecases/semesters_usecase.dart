@@ -21,11 +21,19 @@ class SemestersUseCase {
     return repository.addSubject(semesterId, name);
   }
 
+  Future<Either<Failure, void>> deleteSubject(int subjectId) {
+    return repository.deleteSubject(subjectId);
+  }
+
   Future<Either<Failure, List<ResourceEntity>>> getResources(int subjectId) {
     return repository.getResources(subjectId);
   }
 
-  Future<Either<Failure, void>> uploadResource(int subjectId, String title, String fileUrl) {
-    return repository.uploadResource(subjectId, title, fileUrl);
+  Future<Either<Failure, void>> uploadResourceFile(int subjectId, String title, String filePath, String type) {
+    return repository.uploadResourceFile(subjectId, title, filePath, type);
+  }
+
+  Future<Either<Failure, void>> deleteResource(int resourceId) {
+    return repository.deleteResource(resourceId);
   }
 }

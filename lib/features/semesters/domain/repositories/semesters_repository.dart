@@ -8,6 +8,8 @@ abstract class SemestersRepository {
   Future<Either<Failure, List<SemestersEntity>>> getSemesters();
   Future<Either<Failure, List<SubjectEntity>>> getSubjects(int semesterId);
   Future<Either<Failure, SubjectEntity>> addSubject(int semesterId, String name);
+  Future<Either<Failure, void>> deleteSubject(int subjectId);
   Future<Either<Failure, List<ResourceEntity>>> getResources(int subjectId);
-  Future<Either<Failure, void>> uploadResource(int subjectId, String title, String fileUrl);
+  Future<Either<Failure, void>> uploadResourceFile(int subjectId, String title, String filePath, String type);
+  Future<Either<Failure, void>> deleteResource(int resourceId);
 }

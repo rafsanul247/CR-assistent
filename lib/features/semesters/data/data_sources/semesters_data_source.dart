@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../../core/utils/api_endpoint.dart';
@@ -9,8 +10,15 @@ abstract class SemestersDataSource {
   Future<List<SemestersModel>> getSemesters();
   Future<List<SubjectModel>> getSubjects(int semesterId);
   Future<SubjectModel> addSubject(int semesterId, String name);
+  Future<void> deleteSubject(int subjectId);
   Future<List<ResourceModel>> getResources(int subjectId);
-  Future<void> uploadResource(int subjectId, {required String title, required String fileUrl});
+  Future<void> uploadResourceFile({
+    required int subjectId,
+    required String title,
+    required String filePath,
+    required String type,
+  });
+  Future<void> deleteResource(int resourceId);
 }
 
 class SemestersDataSourceImplement implements SemestersDataSource {
@@ -54,6 +62,15 @@ class SemestersDataSourceImplement implements SemestersDataSource {
   }
 
   @override
+  Future<void> deleteSubject(int subjectId) async {
+    try {
+      await dioClient.delete(ApiEndpoint.deleteSubject(subjectId));
+    } catch (e) {
+      throw ExceptionHandler.handleException(e);
+    }
+  }
+
+  @override
   Future<List<ResourceModel>> getResources(int subjectId) async {
     try {
       final response = await dioClient.get(ApiEndpoint.resources(subjectId));
@@ -65,16 +82,33 @@ class SemestersDataSourceImplement implements SemestersDataSource {
   }
 
   @override
-  Future<void> uploadResource(int subjectId, {required String title, required String fileUrl}) async {
+  Future<void> uploadResourceFile({
+    required int subjectId,
+    required String title,
+    required String filePath,
+    required String type,
+  }) async {
     try {
+      final fileName = filePath.split('/').last;
+      final formData = FormData.fromMap({
+        'title': title,
+        'type': type,
+        'file': await MultipartFile.fromFile(filePath, filename: fileName),
+      });
+
       await dioClient.post(
         ApiEndpoint.uploadResource(subjectId),
-        data: {
-          'title': title,
-          'fileUrl': fileUrl,
-          'type': 'PDF',
-        },
+        data: formData,
       );
+    } catch (e) {
+      throw ExceptionHandler.handleException(e);
+    }
+  }
+
+  @override
+  Future<void> deleteResource(int resourceId) async {
+    try {
+      await dioClient.delete(ApiEndpoint.deleteResource(resourceId));
     } catch (e) {
       throw ExceptionHandler.handleException(e);
     }

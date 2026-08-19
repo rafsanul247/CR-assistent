@@ -85,6 +85,8 @@ class _SubjectListViewState extends State<SubjectListView> {
               name: subject.name,
               resourceCount: subject.resourceCount ?? 0,
               accentColor: color,
+              isCR: authController.isCR,
+              onDelete: () => _showDeleteConfirmDialog(subject.id),
               onTap: () => AppRouter.push('/resources', extra: {
                 'subjectId': subject.id,
                 'subjectName': subject.name,
@@ -109,6 +111,28 @@ class _SubjectListViewState extends State<SubjectListView> {
         }
         return const SizedBox.shrink();
       }),
+    );
+  }
+
+  void _showDeleteConfirmDialog(int subjectId) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF141414),
+        title: const Text("Delete Subject", style: TextStyle(color: Colors.white)),
+        content: const Text("Are you sure you want to delete this subject? All resources under it will be lost.", style: TextStyle(color: Colors.white70)),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () {
+              controller.deleteSubject(widget.semesterId, subjectId);
+              Navigator.pop(context);
+            },
+            child: const Text("Delete", style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
     );
   }
 
@@ -235,12 +259,16 @@ class _SubjectCard extends StatelessWidget {
   final String name;
   final int resourceCount;
   final Color accentColor;
+  final bool isCR;
+  final VoidCallback onDelete;
   final VoidCallback onTap;
 
   const _SubjectCard({
     required this.name,
     required this.resourceCount,
     required this.accentColor,
+    required this.isCR,
+    required this.onDelete,
     required this.onTap,
   });
 
@@ -308,6 +336,11 @@ class _SubjectCard extends StatelessWidget {
                     ],
                   ),
                 ),
+                if (isCR)
+                  IconButton(
+                    icon: const Icon(Iconsax.trash, color: Colors.redAccent, size: 20),
+                    onPressed: onDelete,
+                  ),
                 Icon(Iconsax.arrow_right_3, color: Colors.grey.shade600, size: 18),
               ],
             ),

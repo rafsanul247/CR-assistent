@@ -44,6 +44,7 @@ class AuthRepositoryImplement implements AuthRepository {
     required String deptName,
     required String batchName,
     required bool isCR,
+    String? classCode,
   }) async {
     if (!await networkInfo.isConnected) return const Left(NetworkFailure());
     try {
@@ -55,6 +56,7 @@ class AuthRepositoryImplement implements AuthRepository {
         deptName: deptName,
         batchName: batchName,
         isCR: isCR,
+        classCode: classCode,
       );
       await _persistSession(result.token, result.user);
       return Right(result.user);
@@ -75,6 +77,17 @@ class AuthRepositoryImplement implements AuthRepository {
   @override
   Future<bool> isLoggedIn() async {
     return StorageService.containsKey(Constants.keyAuthToken);
+  }
+
+  @override
+  Future<Either<Failure, String>> getMyClassCode() async {
+    if (!await networkInfo.isConnected) return const Left(NetworkFailure());
+    try {
+      final code = await dataSource.getMyClassCode();
+      return Right(code);
+    } on AppException catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
   }
 
   Future<void> _persistSession(String token, UserEntity user) async {

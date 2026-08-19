@@ -1,5 +1,8 @@
+import 'package:cr_app/core/common/input_text_field.dart';
+import 'package:cr_app/features/auth/presentation/views/registration_screen/controller/registration_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
 class DeptAndBatch extends StatelessWidget {
   const DeptAndBatch({
@@ -8,15 +11,16 @@ class DeptAndBatch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<RegistrationController>();
     return Row(
       children: [
         // Dept.
         Expanded(
-          child: TextField(
-            decoration: InputDecoration(
-              labelText: "Dept.",
-              prefixIcon: Icon(Icons.school_outlined),
-            ),
+          child: UTextField(
+            controller: controller.deptNameController,
+            validator: controller.deptValidate,
+            labelText: "Dept.",
+            prefixIcon: const Icon(Icons.school_outlined),
           ),
         ),
 
@@ -24,11 +28,11 @@ class DeptAndBatch extends StatelessWidget {
 
         // Batch
         Expanded(
-          child: TextField(
-            decoration: InputDecoration(
-              labelText: "Batch",
-              prefixIcon: Icon(Icons.school_outlined),
-            ),
+          child: UTextField(
+            controller: controller.batchNameController,
+            validator: controller.batchValidate,
+            labelText: "Batch",
+            prefixIcon: const Icon(Icons.school_outlined),
           ),
         ),
       ],

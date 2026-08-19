@@ -51,10 +51,32 @@ class SemestersRepositoryImplement implements SemestersRepository {
   }
 
   @override
-  Future<Either<Failure, void>> uploadResource(int subjectId, String title, String fileUrl) async {
+  Future<Either<Failure, void>> deleteSubject(int subjectId) async {
     if (!await networkInfo.isConnected) return const Left(NetworkFailure());
     try {
-      await dataSource.uploadResource(subjectId, title: title, fileUrl: fileUrl);
+      await dataSource.deleteSubject(subjectId);
+      return const Right(null);
+    } on AppException catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> uploadResourceFile(int subjectId, String title, String filePath, String type) async {
+    if (!await networkInfo.isConnected) return const Left(NetworkFailure());
+    try {
+      await dataSource.uploadResourceFile(subjectId: subjectId, title: title, filePath: filePath, type: type);
+      return const Right(null);
+    } on AppException catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteResource(int resourceId) async {
+    if (!await networkInfo.isConnected) return const Left(NetworkFailure());
+    try {
+      await dataSource.deleteResource(resourceId);
       return const Right(null);
     } on AppException catch (e) {
       return Left(_mapExceptionToFailure(e));

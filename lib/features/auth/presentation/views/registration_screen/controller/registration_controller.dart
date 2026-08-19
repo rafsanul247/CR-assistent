@@ -15,6 +15,7 @@ class RegistrationController extends GetxController {
   final batchNameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final classCodeController = TextEditingController();
 
   var isObscureText = true.obs;
 
@@ -24,56 +25,38 @@ class RegistrationController extends GetxController {
 
   // ------------------ Validators ------------------
   String? usernameValidate(String? value) {
-    if (value == null || value.isEmpty) {
-      return "Please enter your full name!";
-    }
+    if (value == null || value.isEmpty) return "Please enter your full name!";
     return null;
   }
 
   String? universityValidate(String? value) {
-    if (value == null || value.isEmpty) {
-      return "Please enter your university name!";
-    }
+    if (value == null || value.isEmpty) return "Please enter your university name!";
     return null;
   }
 
   String? deptValidate(String? value) {
-    if (value == null || value.isEmpty) {
-      return "Please enter your department!";
-    }
+    if (value == null || value.isEmpty) return "Please enter your department!";
     return null;
   }
 
   String? batchValidate(String? value) {
-    if (value == null || value.isEmpty) {
-      return "Please enter your batch!";
-    }
+    if (value == null || value.isEmpty) return "Please enter your batch!";
     return null;
   }
 
   String? emailValidate(String? value) {
-    if (value == null || value.isEmpty) {
-      return "Please enter your Email!";
-    }
-    if (!GetUtils.isEmail(value)) {
-      return "Enter a valid Email";
-    }
+    if (value == null || value.isEmpty) return "Please enter your Email!";
+    if (!GetUtils.isEmail(value)) return "Enter a valid Email";
     return null;
   }
 
   String? passwordValidate(String? value) {
-    if (value == null || value.isEmpty) {
-      return "Please enter a password!";
-    }
-    if (value.length < 6) {
-      return "Password must be at least 6 characters long";
-    }
+    if (value == null || value.isEmpty) return "Please enter a password!";
+    if (value.length < 6) return "Password must be at least 6 characters long";
     return null;
   }
 
-  void passwordToggle() {
-    isObscureText.value = !isObscureText.value;
-  }
+  void passwordToggle() => isObscureText.value = !isObscureText.value;
 
   // ------------------ API call ------------------
   Future<bool> register() async {
@@ -90,13 +73,13 @@ class RegistrationController extends GetxController {
       deptName: deptNameController.text.trim(),
       batchName: batchNameController.text.trim(),
       isCR: isCR,
+      classCode: isCR ? null : classCodeController.text.trim(),
     );
 
     bool success = false;
     result.fold(
       (failure) => errorMessage.value = failure.message,
       (user) {
-        // IMPORTANT: Update global AuthController state
         if (sl.isRegistered<AuthController>()) {
           sl<AuthController>().user.value = user;
         }
@@ -116,6 +99,7 @@ class RegistrationController extends GetxController {
     batchNameController.dispose();
     emailController.dispose();
     passwordController.dispose();
+    classCodeController.dispose();
     super.onClose();
   }
 }

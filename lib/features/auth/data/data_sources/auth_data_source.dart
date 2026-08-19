@@ -3,11 +3,9 @@ import '../../../../core/network/dio_client.dart';
 import '../../../../core/utils/api_endpoint.dart';
 import '../models/auth_model.dart';
 
-// Carries both user + token out of the data source together
 class AuthResult {
   final UserModel user;
   final String token;
-
   AuthResult({required this.user, required this.token});
 }
 
@@ -21,19 +19,17 @@ abstract class AuthDataSource {
     required String deptName,
     required String batchName,
     required bool isCR,
+    String? classCode,
   });
+  Future<String> getMyClassCode();
 }
 
 class AuthDataSourceImplement implements AuthDataSource {
   final DioClient dioClient;
-
   AuthDataSourceImplement({required this.dioClient});
 
   @override
-  Future<AuthResult> login({
-    required String email,
-    required String password,
-  }) async {
+  Future<AuthResult> login({required String email, required String password}) async {
     try {
       final response = await dioClient.post(
         ApiEndpoint.login,
@@ -57,8 +53,10 @@ class AuthDataSourceImplement implements AuthDataSource {
     required String deptName,
     required String batchName,
     required bool isCR,
+    String? classCode,
   }) async {
     try {
+      // Backend expects these exact keys to save in Database
       final response = await dioClient.post(
         ApiEndpoint.register,
         data: {
@@ -68,13 +66,25 @@ class AuthDataSourceImplement implements AuthDataSource {
           'universityName': universityName,
           'deptName': deptName,
           'batchName': batchName,
-          'isCR': isCR,
+          'isCR': isCR, // Sending as boolean
+          'role': isCR ? 'CR' : 'STUDENT',
+          'classCode': classCode, // Null if CR, value if Student
         },
       );
       return AuthResult(
         user: UserModel.fromJson(response.data['user']),
         token: response.data['token'] as String,
       );
+    } catch (e) {
+      throw ExceptionHandler.handleException(e);
+    }
+  }
+
+  @override
+  Future<String> getMyClassCode() async {
+    try {
+      final response = await dioClient.get(ApiEndpoint.myClassCode);
+      return response.data['classCode'] as String;
     } catch (e) {
       throw ExceptionHandler.handleException(e);
     }

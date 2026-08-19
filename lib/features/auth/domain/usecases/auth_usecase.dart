@@ -23,6 +23,7 @@ class AuthUseCase {
     required String deptName,
     required String batchName,
     required bool isCR,
+    String? classCode,
   }) {
     return repository.register(
       username: username,
@@ -32,10 +33,13 @@ class AuthUseCase {
       deptName: deptName,
       batchName: batchName,
       isCR: isCR,
+      classCode: classCode,
     );
   }
 
   Future<Either<Failure, void>> logout() => repository.logout();
 
   Future<bool> isLoggedIn() => repository.isLoggedIn();
+
+  Future<Either<Failure, String>> getMyClassCode() => repository.getMyClassCode();
 }
