@@ -1,65 +1,67 @@
 import 'package:flutter/material.dart';
 
-class UColors{
-
+class UColors {
   UColors._();
 
-
-  // Primary Color
-  static const Color primary = Color(0xFF0A66D2);
-
-  // Text colors
-  static const Color textDark  = Color(0xFF1F2937);
-  static const Color textWhite = Color(0xFFC9D1D9);
-
+  // ── Modern Dark Blue Vibe ──
+  static const Color primary = Color(0xFF3B82F6); 
+  static const Color secondary = Color(0xFF1E293B); 
+  static const Color accent = Color(0xFF60A5FA); 
 
   // Background colors
-  static const Color light = Color(0xFFF8F9FA);
-  static const Color dark  = Color(0xFF0F1117);
+  static const Color dark = Color(0xFF0F172A); 
+  static const Color containerDark = Color(0xFF1E293B); 
+  static const Color black = Color(0xFF020617); 
 
-  // Button colors
-  static const Color buttonPrimary  = Color(0xFF009688);
-  static const Color buttonDisabled = Color(0xFFFAFAFA);
+  // Text colors
+  static const Color textPrimary = Color(0xFFF8FAFC); 
+  static const Color textSecondary = Color(0xFF94A3B8); 
+  static const Color textWhite = Color(0xFFFFFFFF);
+  static const Color textDark = Color(0xFF1E293B);
+
+  // Status colors
+  static const Color error = Color(0xFFEF4444);
+  static const Color success = Color(0xFF10B981);
+  static const Color warning = Color(0xFFF59E0B);
+  static const Color info = Color(0xFF3B82F6);
 
   // Border colors
-  static const Color borderPrimary   = Color(0xFFE5E6E6);
-  static const Color borderSecondary = Color(0xFFE6E6E6);
+  static const Color borderDark = Color(0xFF334155);
+  static const Color borderLight = Color(0xFFE2E8F0);
+  static const Color borderPrimary = Color(0xFF334155);
+  static const Color borderSecondary = Color(0xFF1E293B);
 
-  // Error and validation colors
-  static const Color error   = Color(0xFFD32F2F);
-  static const Color success = Color(0xFF388E3C);
-  static const Color warning = Color(0xFFF57C00);
-  static const Color info    = Color(0xFF1976D2);
+  // Neutral
+  static const Color grey = Color(0xFF64748B);
+  static const Color darkerGrey = Color(0xFF334155);
+  static const Color darkGrey = Color(0xFF64748B);
+  static const Color lightGrey = Color(0xFFF1F5F9);
+  static const Color white = Color(0xFFFFFFFF);
+  static const Color light = Color(0xFFF8FAFC);
 
-  static const Color yellow  = Color(0xFFFFE24B);
+  // Button
+  static const Color buttonPrimary = Color(0xFF3B82F6);
+  static const Color buttonDisabled = Color(0xFF1E293B);
 
-  // Neutral Shades
-  static const Color black      = Color(0xFF000000);
-  static const Color darkerGrey = Color(0xFF4F4F4F);
-  static const Color darkGrey   = Color(0xFF939393);
-  static const Color grey       = Color(0xFFE0E0E0);
-  static const Color lightGrey  = Color(0xFFF9F9F9);
-  static const Color white      = Color(0xFFFFFFFF);
+  // ── Legacy Compatibility (To avoid build errors) ──
+  static const Color yellow = Color(0xFFFFE24B);
+  static const Color progCardLight = Color(0xFFD6D3F7);
+  static const Color progCardLightBorder = Color(0xFFF0EFFF);
+  static const Color progCardDark = Color(0xFF1E2235);
+  static const Color progCardDarkBorder = Color(0xFF1E2235);
+  static const Color cardDark = Color(0xFF3E3E40);
+  static const Color cardLight = Color(0xFFF1F3F5);
+  static const Color navBgLight = Color(0xFFFFFFFF);
+  static const Color navBgDark = Color(0xFF0F1117);
+  static const Color navBorderLight = Color(0xFFE8EAF5);
+  static const Color navBorderDark = Color(0xFF1E2235);
+  static const Color navActiveLight = Color(0xFF4A5CDB);
+  static const Color navActiveDark = Color(0xFF8899FF);
+  static const Color navInactiveLight = Color(0xFFAAAAAA);
+  static const Color navInactiveDark = Color(0xFF555555);
 
-  // ── Progress card ──
-  static const progCardLight        = Color(0xFFD6D3F7);
-  static const progCardLightBorder  = Color(0xFFF0EFFF);
-  static const progCardDark         = Color(0xFF1E2235);
-  static const progCardDarkBorder   = Color(0xFF1E2235);
-
-  // topic card
-  static const cardDark       = Color(0xFF3E3E40);
-  static const cardLight       = Color(0xFFF1F3F5);
-  static const borderDark     = Color(0xFF2A2D42);
-  static const borderLight     = Color(0xFFDCDCDC);
-
-  // ── Bottom nav ──
-  static const navBgLight       = Color(0xFFFFFFFF);
-  static const navBgDark        = Color(0xFF0F1117);
-  static const navBorderLight   = Color(0xFFE8EAF5);
-  static const navBorderDark    = Color(0xFF1E2235);
-  static const navActiveLight   = Color(0xFF4A5CDB);
-  static const navActiveDark    = Color(0xFF8899FF);
-  static const navInactiveLight = Color(0xFFAAAAAA);
-  static const navInactiveDark  = Color(0xFF555555);
+  // App specific
+  static const Color navBg = Color(0xFF1E293B);
+  static const Color navActive = Color(0xFF3B82F6);
+  static const Color navInactive = Color(0xFF64748B);
 }

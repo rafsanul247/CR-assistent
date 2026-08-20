@@ -14,7 +14,6 @@ class SemestersController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxString errorMessage = ''.obs;
 
-  // Track current context for real-time refreshes
   int? currentSemesterId;
   int? currentSubjectId;
 
@@ -47,17 +46,20 @@ class SemestersController extends GetxController {
     isLoading.value = false;
   }
 
-  Future<void> addSubject(int semesterId, String name) async {
+  Future<bool> addSubject(int semesterId, String name) async {
     isLoading.value = true;
     final result = await _useCase.addSubject(semesterId, name);
+    bool success = false;
     result.fold(
-      (failure) => Get.snackbar('Error', failure.message),
+      (failure) => errorMessage.value = failure.message,
       (newSubject) {
-        fetchSubjects(semesterId); // Refresh subjects list to include new one and updated counts
-        fetchSemesters(); // Refresh semesters counts on home
+        fetchSubjects(semesterId);
+        fetchSemesters();
+        success = true;
       },
     );
     isLoading.value = false;
+    return success;
   }
 
   Future<void> fetchResources(int subjectId) async {
@@ -72,29 +74,31 @@ class SemestersController extends GetxController {
     isLoading.value = false;
   }
 
-  Future<void> deleteSubject(int semesterId, int subjectId) async {
+  Future<bool> deleteSubject(int semesterId, int subjectId) async {
     isLoading.value = true;
     final result = await _useCase.deleteSubject(subjectId);
+    bool success = false;
     result.fold(
-      (failure) => Get.snackbar('Error', failure.message),
+      (failure) => errorMessage.value = failure.message,
       (_) {
         fetchSubjects(semesterId);
         fetchSemesters();
-        Get.snackbar('Success', 'Subject deleted successfully');
+        success = true;
       },
     );
     isLoading.value = false;
+    return success;
   }
 
-  Future<void> uploadResourceFiles({
+  Future<bool> uploadResourceFiles({
     required int subjectId,
     required String title,
     required List<String> filePaths,
     required String type,
   }) async {
     isLoading.value = true;
+    bool anySuccess = false;
     
-    int successCount = 0;
     for (String path in filePaths) {
       String finalType = type;
       if (type == 'NOTE') {
@@ -105,40 +109,33 @@ class SemestersController extends GetxController {
       }
 
       final result = await _useCase.uploadResourceFile(subjectId, title, path, finalType);
-      result.fold(
-        (failure) => Get.snackbar('Upload Failed', '${path.split('/').last}: ${failure.message}'),
-        (_) => successCount++,
-      );
+      result.fold((_) {}, (_) => anySuccess = true);
     }
 
-    if (successCount > 0) {
+    if (anySuccess) {
       fetchResources(subjectId);
-      // Refresh subjects list if we have currentSemesterId to update resource count badge
-      if (currentSemesterId != null) {
-        fetchSubjects(currentSemesterId!);
-      }
+      if (currentSemesterId != null) fetchSubjects(currentSemesterId!);
       fetchSemesters();
-      Get.snackbar('Success', '$successCount file(s) uploaded successfully');
     }
 
     isLoading.value = false;
+    return anySuccess;
   }
 
-  Future<void> deleteResource(int subjectId, int resourceId) async {
+  Future<bool> deleteResource(int subjectId, int resourceId) async {
     isLoading.value = true;
     final result = await _useCase.deleteResource(resourceId);
+    bool success = false;
     result.fold(
-      (failure) => Get.snackbar('Error', failure.message),
+      (failure) => errorMessage.value = failure.message,
       (_) {
         fetchResources(subjectId);
-        // Refresh subjects list if we have currentSemesterId to update resource count badge
-        if (currentSemesterId != null) {
-          fetchSubjects(currentSemesterId!);
-        }
+        if (currentSemesterId != null) fetchSubjects(currentSemesterId!);
         fetchSemesters();
-        Get.snackbar('Success', 'Resource deleted successfully');
+        success = true;
       },
     );
     isLoading.value = false;
+    return success;
   }
 }

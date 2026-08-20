@@ -11,6 +11,7 @@ class AuthController extends GetxController {
 
   final Rxn<UserEntity> user = Rxn<UserEntity>();
   final RxBool isLoading = false.obs;
+  final RxString errorMessage = ''.obs;
 
   bool get isCR {
     final role = user.value?.role ?? StorageService.get<String>(Constants.keyUserRole);
@@ -44,9 +45,10 @@ class AuthController extends GetxController {
 
   Future<void> login(String email, String password) async {
     isLoading.value = true;
+    errorMessage.value = '';
     final result = await _useCase.login(email: email, password: password);
     result.fold(
-      (failure) => Get.snackbar('Error', failure.message),
+      (failure) => errorMessage.value = failure.message,
       (userData) {
         user.value = userData;
         AppRouter.go('/main'); 
@@ -65,6 +67,7 @@ class AuthController extends GetxController {
     required bool isCR,
   }) async {
     isLoading.value = true;
+    errorMessage.value = '';
     final result = await _useCase.register(
       username: username,
       email: email,
@@ -75,7 +78,7 @@ class AuthController extends GetxController {
       isCR: isCR,
     );
     result.fold(
-      (failure) => Get.snackbar('Error', failure.message),
+      (failure) => errorMessage.value = failure.message,
       (userData) {
         user.value = userData;
         AppRouter.go('/main');

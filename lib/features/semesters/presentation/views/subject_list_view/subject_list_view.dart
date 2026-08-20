@@ -1,8 +1,8 @@
+import 'package:cr_app/core/constants/colors.dart';
 import 'package:cr_app/core/router/app_router.dart';
 import 'package:cr_app/features/auth/presentation/manager/controller/auth_controller.dart';
 import 'package:cr_app/features/semesters/presentation/manager/controller/semesters_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
@@ -24,15 +24,6 @@ class _SubjectListViewState extends State<SubjectListView> {
   final SemestersController controller = Get.find<SemestersController>();
   final AuthController authController = Get.find<AuthController>();
 
-  static const List<Color> _accentColors = [
-    Color(0xFF3B82F6),
-    Color(0xFF8B5CF6),
-    Color(0xFF10B981),
-    Color(0xFFF59E0B),
-    Color(0xFFEC4899),
-    Color(0xFF06B6D4),
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -44,49 +35,42 @@ class _SubjectListViewState extends State<SubjectListView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0A),
+      backgroundColor: UColors.dark,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0A0A0A),
+        backgroundColor: Colors.transparent,
         elevation: 0,
-        scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: const Icon(Iconsax.arrow_left_2, color: Colors.white, size: 26),
-          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Iconsax.arrow_left_2, color: UColors.textPrimary),
+          onPressed: () => AppRouter.pop(),
         ),
         title: Text(
           widget.semesterName,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
+          style: const TextStyle(color: UColors.textPrimary, fontWeight: FontWeight.bold),
         ),
+        centerTitle: true,
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(
-            child: CircularProgressIndicator(color: Color(0xFF3B82F6), strokeWidth: 2.5),
-          );
+          return const Center(child: CircularProgressIndicator(color: UColors.primary));
         }
 
         if (controller.errorMessage.isNotEmpty) {
-          return _buildErrorState(controller.errorMessage.value);
+          return Center(child: Text(controller.errorMessage.value, style: const TextStyle(color: UColors.error)));
         }
 
-        if (controller.subjects.isEmpty) return const _EmptyState();
+        if (controller.subjects.isEmpty) {
+          return const Center(child: Text("No subjects found", style: TextStyle(color: UColors.textSecondary)));
+        }
 
         return ListView.builder(
-          padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 90.h),
+          padding: const EdgeInsets.all(16),
           itemCount: controller.subjects.length,
           itemBuilder: (context, index) {
             final subject = controller.subjects[index];
-            final color = _accentColors[index % _accentColors.length];
             return _SubjectCard(
-              name: subject.name,
-              resourceCount: subject.resourceCount ?? 0,
-              accentColor: color,
+              subject: subject,
               isCR: authController.isCR,
-              onDelete: () => _showDeleteConfirmDialog(subject.id),
+              onDelete: () => _showDeleteConfirm(subject.id),
               onTap: () => AppRouter.push('/resources', extra: {
                 'subjectId': subject.id,
                 'subjectName': subject.name,
@@ -96,38 +80,39 @@ class _SubjectListViewState extends State<SubjectListView> {
         );
       }),
       floatingActionButton: Obx(() {
-        if (authController.isCR) {
-          return FloatingActionButton.extended(
-            onPressed: () => _showAddSubjectDialog(context),
-            backgroundColor: const Color(0xFF3B82F6),
-            foregroundColor: Colors.white,
-            elevation: 0,
-            icon: const Icon(Iconsax.add, size: 20),
-            label: const Text(
-              "Add Subject",
-              style: TextStyle(fontWeight: FontWeight.w600),
-            ),
-          );
-        }
-        return const SizedBox.shrink();
+        if (!authController.isCR) return const SizedBox.shrink();
+        return FloatingActionButton.extended(
+          onPressed: () => _showAddSubjectDialog(context),
+          backgroundColor: UColors.primary,
+          icon: const Icon(Iconsax.add, color: Colors.white),
+          label: const Text("Add Subject", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        );
       }),
     );
   }
 
-  void _showDeleteConfirmDialog(int subjectId) {
+  void _showDeleteConfirm(int subjectId) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF141414),
-        title: const Text("Delete Subject", style: TextStyle(color: Colors.white)),
-        content: const Text("Are you sure you want to delete this subject? All resources under it will be lost.", style: TextStyle(color: Colors.white70)),
+        backgroundColor: UColors.containerDark,
+        title: const Text("Delete Subject", style: TextStyle(color: UColors.textPrimary)),
+        content: const Text("Are you sure? All resources will be deleted.", style: TextStyle(color: UColors.textSecondary)),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            onPressed: () {
-              controller.deleteSubject(widget.semesterId, subjectId);
-              Navigator.pop(context);
+            style: ElevatedButton.styleFrom(backgroundColor: UColors.error),
+            onPressed: () async {
+              final success = await controller.deleteSubject(widget.semesterId, subjectId);
+              if (context.mounted) {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(success ? "Subject deleted successfully" : controller.errorMessage.value),
+                    backgroundColor: success ? UColors.success : UColors.error,
+                  ),
+                );
+              }
             },
             child: const Text("Delete", style: TextStyle(color: Colors.white)),
           ),
@@ -136,245 +121,80 @@ class _SubjectListViewState extends State<SubjectListView> {
     );
   }
 
-  Widget _buildErrorState(String message) {
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 32.w),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: EdgeInsets.all(16.w),
-              decoration: BoxDecoration(
-                color: const Color(0xFFEF4444).withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Iconsax.warning_2, color: Color(0xFFEF4444), size: 32),
-            ),
-            SizedBox(height: 16.h),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey.shade400, fontSize: 14.spMin),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   void _showAddSubjectDialog(BuildContext context) {
     final nameController = TextEditingController();
     showDialog(
       context: context,
-      barrierColor: Colors.black.withValues(alpha: 0.6),
-      builder: (context) => Dialog(
-        backgroundColor: const Color(0xFF141414),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: BorderSide(color: const Color(0xFF262626)),
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(20.w),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                "Add Subject",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              SizedBox(height: 16.h),
-              TextField(
-                controller: nameController,
-                autofocus: true,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  hintText: "Subject name",
-                  hintStyle: TextStyle(color: Colors.grey.shade600),
-                  filled: true,
-                  fillColor: const Color(0xFF0A0A0A),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Color(0xFF262626)),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Color(0xFF262626)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Color(0xFF3B82F6)),
-                  ),
-                ),
-              ),
-              SizedBox(height: 20.h),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 12.h),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      ),
-                      child: Text("Cancel", style: TextStyle(color: Colors.grey.shade400)),
-                    ),
-                  ),
-                  SizedBox(width: 10.w),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (nameController.text.isNotEmpty) {
-                          controller.addSubject(widget.semesterId, nameController.text);
-                          Navigator.pop(context);
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF3B82F6),
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        padding: EdgeInsets.symmetric(vertical: 12.h),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      ),
-                      child: const Text("Add", style: TextStyle(fontWeight: FontWeight.w600)),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        backgroundColor: UColors.containerDark,
+        title: const Text("Add New Subject", style: TextStyle(color: UColors.textPrimary)),
+        content: TextField(
+          controller: nameController,
+          style: const TextStyle(color: Colors.white),
+          decoration: InputDecoration(
+            hintText: "Enter subject name",
+            hintStyle: const TextStyle(color: UColors.textSecondary),
+            filled: true,
+            fillColor: UColors.dark,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
           ),
         ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
+          ElevatedButton(
+            onPressed: () async {
+              if (nameController.text.isNotEmpty) {
+                final success = await controller.addSubject(widget.semesterId, nameController.text);
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(success ? "Subject added successfully" : controller.errorMessage.value),
+                      backgroundColor: success ? UColors.success : UColors.error,
+                    ),
+                  );
+                }
+              }
+            },
+            child: const Text("Add"),
+          ),
+        ],
       ),
     );
   }
 }
 
 class _SubjectCard extends StatelessWidget {
-  final String name;
-  final int resourceCount;
-  final Color accentColor;
+  final dynamic subject;
   final bool isCR;
   final VoidCallback onDelete;
   final VoidCallback onTap;
 
-  const _SubjectCard({
-    required this.name,
-    required this.resourceCount,
-    required this.accentColor,
-    required this.isCR,
-    required this.onDelete,
-    required this.onTap,
-  });
+  const _SubjectCard({required this.subject, required this.isCR, required this.onDelete, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 12.h),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(18),
-          splashColor: accentColor.withValues(alpha: 0.08),
-          child: Container(
-            padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: const Color(0xFF141414),
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: const Color(0xFF262626)),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(14),
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [accentColor, accentColor.withValues(alpha: 0.6)],
-                    ),
-                  ),
-                  child: const Icon(Iconsax.book_saved, color: Colors.white, size: 22),
-                ),
-                SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        name,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      SizedBox(height: 4.h),
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
-                        decoration: BoxDecoration(
-                          color: accentColor.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          "$resourceCount resources",
-                          style: TextStyle(
-                            color: accentColor,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                if (isCR)
-                  IconButton(
-                    icon: const Icon(Iconsax.trash, color: Colors.redAccent, size: 20),
-                    onPressed: onDelete,
-                  ),
-                Icon(Iconsax.arrow_right_3, color: Colors.grey.shade600, size: 18),
-              ],
-            ),
-          ),
+    return Card(
+      color: UColors.containerDark,
+      margin: const EdgeInsets.only(bottom: 12),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: ListTile(
+        onTap: onTap,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        leading: Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(color: UColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+          child: const Icon(Iconsax.book_saved, color: UColors.primary),
         ),
-      ),
-    );
-  }
-}
-
-class _EmptyState extends StatelessWidget {
-  const _EmptyState();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: EdgeInsets.all(20.w),
-            decoration: BoxDecoration(
-              color: const Color(0xFF141414),
-              shape: BoxShape.circle,
-              border: Border.all(color: const Color(0xFF262626)),
-            ),
-            child: Icon(Iconsax.document, color: Colors.grey.shade600, size: 36),
-          ),
-          SizedBox(height: 16.h),
-          Text(
-            "No subjects found",
-            style: TextStyle(color: Colors.grey.shade400, fontSize: 15.spMin, fontWeight: FontWeight.w500),
-          ),
-        ],
+        title: Text(subject.name, style: const TextStyle(color: UColors.textPrimary, fontWeight: FontWeight.w600)),
+        subtitle: Text("${subject.resourceCount ?? 0} resources", style: const TextStyle(color: UColors.textSecondary)),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (isCR) IconButton(icon: const Icon(Iconsax.trash, color: UColors.error, size: 20), onPressed: onDelete),
+            const Icon(Iconsax.arrow_right_3, color: UColors.textSecondary, size: 18),
+          ],
+        ),
       ),
     );
   }

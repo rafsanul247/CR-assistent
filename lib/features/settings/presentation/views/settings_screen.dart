@@ -1,7 +1,9 @@
+import 'package:cr_app/core/constants/colors.dart';
 import 'package:cr_app/core/storage/storage_service.dart';
 import 'package:cr_app/core/utils/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 // Data Model
 class SettingsItemModel {
@@ -27,14 +29,12 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
-      backgroundColor: theme.colorScheme.surfaceContainerLowest,
+      backgroundColor: UColors.dark,
       appBar: AppBar(
         title: const Text(
           "Settings",
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
@@ -49,23 +49,23 @@ class SettingsScreen extends StatelessWidget {
             _SettingsGroup(
               title: "Account & Preferences",
               items: [
-                SettingsItemModel(
+                const SettingsItemModel(
                   title: "Profile",
                   subtitle: "Edit personal information and photo",
-                  icon: Icons.person_outline_rounded,
-                  route: '/profile',
+                  icon: Iconsax.user_square,
+                  // route: '/profile',
                 ),
-                SettingsItemModel(
+                const SettingsItemModel(
                   title: "Notifications",
                   subtitle: "Manage reminders and class alerts",
-                  icon: Icons.notifications_none_rounded,
-                  route: '/notifications',
+                  icon: Iconsax.notification,
+                  route: '/notice',
                 ),
-                SettingsItemModel(
+                const SettingsItemModel(
                   title: "Class & Semester",
                   subtitle: "Manage active academic courses",
-                  icon: Icons.class_outlined,
-                  route: '/semesters',
+                  icon: Iconsax.teacher,
+                  route: '/main',
                 ),
               ],
             ),
@@ -73,10 +73,10 @@ class SettingsScreen extends StatelessWidget {
             _SettingsGroup(
               title: "System & Info",
               items: [
-                SettingsItemModel(
+                const SettingsItemModel(
                   title: "About CR Assistant",
                   subtitle: "App version and release notes",
-                  icon: Icons.info_outline_rounded,
+                  icon: Iconsax.info_circle,
                   route: '/about',
                 ),
               ],
@@ -88,7 +88,7 @@ class SettingsScreen extends StatelessWidget {
                 SettingsItemModel(
                   title: "Log Out",
                   subtitle: "Sign out of your account on this device",
-                  icon: Icons.logout_rounded,
+                  icon: Iconsax.logout,
                   isDestructive: true,
                   onTap: () => _showLogoutDialog(context),
                 ),
@@ -102,32 +102,30 @@ class SettingsScreen extends StatelessWidget {
   }
 
   void _showLogoutDialog(BuildContext context) {
-    final theme = Theme.of(context);
-
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: UColors.containerDark,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        title: const Text("Log Out"),
-        content: const Text("Are you sure you want to log out of your session?"),
+        title: const Text("Log Out", style: TextStyle(color: Colors.white)),
+        content: const Text("Are you sure you want to log out?", style: TextStyle(color: UColors.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(
-              "Cancel",
-              style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
-            ),
+            child: const Text("Cancel", style: TextStyle(color: Colors.white70)),
           ),
-          FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: theme.colorScheme.error,
-              foregroundColor: theme.colorScheme.onError,
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: UColors.error,
+              foregroundColor: Colors.white,
             ),
             onPressed: () async {
               Navigator.pop(context);
               await StorageService.delete(Constants.keyAuthToken);
+              await StorageService.delete(Constants.keyUserRole);
+              await StorageService.delete(Constants.keyUserId);
               if (context.mounted) {
                 context.go('/');
               }
@@ -140,50 +138,50 @@ class SettingsScreen extends StatelessWidget {
   }
 }
 
-// Custom Sub-Widget: Header Profile Card
 class _UserProfileCard extends StatelessWidget {
   const _UserProfileCard();
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
+        color: UColors.containerDark,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+          color: UColors.borderDark.withValues(alpha: 0.5),
         ),
       ),
       child: Row(
         children: [
           CircleAvatar(
             radius: 28,
-            backgroundColor: theme.colorScheme.primaryContainer,
-            child: Icon(
-              Icons.person,
+            backgroundColor: UColors.primary.withValues(alpha: 0.1),
+            child: const Icon(
+              Iconsax.user,
               size: 32,
-              color: theme.colorScheme.onPrimaryContainer,
+              color: UColors.primary,
             ),
           ),
           const SizedBox(width: 16),
-          Expanded(
+          const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   "Student Profile",
-                  style: theme.textTheme.titleMedium?.copyWith(
+                  style: TextStyle(
+                    color: Colors.white,
                     fontWeight: FontWeight.bold,
+                    fontSize: 16,
                   ),
                 ),
-                const SizedBox(height: 2),
+                SizedBox(height: 2),
                 Text(
                   "Class Representative Assistant",
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
+                  style: TextStyle(
+                    color: UColors.textSecondary,
+                    fontSize: 14,
                   ),
                 ),
               ],
@@ -195,7 +193,6 @@ class _UserProfileCard extends StatelessWidget {
   }
 }
 
-// Custom Sub-Widget: Grouped Container
 class _SettingsGroup extends StatelessWidget {
   final String title;
   final List<SettingsItemModel> items;
@@ -207,8 +204,6 @@ class _SettingsGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -216,9 +211,10 @@ class _SettingsGroup extends StatelessWidget {
           padding: const EdgeInsets.only(left: 4, bottom: 8),
           child: Text(
             title.toUpperCase(),
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: theme.colorScheme.primary,
+            style: const TextStyle(
+              color: UColors.primary,
               fontWeight: FontWeight.bold,
+              fontSize: 11,
               letterSpacing: 1.1,
             ),
           ),
@@ -226,10 +222,10 @@ class _SettingsGroup extends StatelessWidget {
         Container(
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
-            color: theme.colorScheme.surface,
+            color: UColors.containerDark,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+              color: UColors.borderDark.withValues(alpha: 0.5),
             ),
           ),
           child: ListView.separated(
@@ -239,7 +235,7 @@ class _SettingsGroup extends StatelessWidget {
             separatorBuilder: (context, index) => Divider(
               height: 1,
               indent: 56,
-              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
+              color: UColors.borderDark.withValues(alpha: 0.3),
             ),
             itemBuilder: (context, index) {
               return _SettingsTile(item: items[index]);
@@ -251,7 +247,6 @@ class _SettingsGroup extends StatelessWidget {
   }
 }
 
-// Custom Sub-Widget: Individual Tile
 class _SettingsTile extends StatelessWidget {
   final SettingsItemModel item;
 
@@ -259,19 +254,17 @@ class _SettingsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     final activeColor = item.isDestructive
-        ? theme.colorScheme.error
-        : theme.colorScheme.onSurface;
+        ? UColors.error
+        : Colors.white;
 
     final iconBgColor = item.isDestructive
-        ? theme.colorScheme.errorContainer.withValues(alpha: 0.4)
-        : theme.colorScheme.surfaceContainerHigh;
+        ? UColors.error.withValues(alpha: 0.1)
+        : UColors.dark.withValues(alpha: 0.5);
 
     final iconColor = item.isDestructive
-        ? theme.colorScheme.error
-        : theme.colorScheme.primary;
+        ? UColors.error
+        : UColors.primary;
 
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -294,16 +287,16 @@ class _SettingsTile extends StatelessWidget {
       subtitle: item.subtitle != null
           ? Text(
         item.subtitle!,
-        style: TextStyle(
-          color: theme.colorScheme.onSurfaceVariant,
+        style: const TextStyle(
+          color: UColors.textSecondary,
           fontSize: 12,
         ),
       )
           : null,
-      trailing: Icon(
-        Icons.chevron_right_rounded,
-        size: 20,
-        color: theme.colorScheme.onSurfaceVariant,
+      trailing: const Icon(
+        Iconsax.arrow_right_3,
+        size: 18,
+        color: UColors.textSecondary,
       ),
       onTap: () {
         if (item.onTap != null) {

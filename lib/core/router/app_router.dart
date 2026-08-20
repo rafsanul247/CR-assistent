@@ -4,6 +4,7 @@ import 'package:cr_app/core/utils/constant.dart';
 import 'package:cr_app/features/auth/presentation/views/class_code/class_code.dart';
 import 'package:cr_app/features/auth/presentation/views/login_screen/login_screen.dart';
 import 'package:cr_app/features/auth/presentation/views/registration_screen/registration_screen.dart';
+import 'package:cr_app/features/notice/presentation/views/notice_screen.dart';
 import 'package:cr_app/features/semesters/presentation/views/subject_list_view/subject_list_view.dart';
 import 'package:cr_app/features/semesters/presentation/views/resource_list_view/resource_list_view.dart';
 import 'package:cr_app/features/settings/presentation/views/about_cr_assistant/about_cr_assistant.dart';
@@ -25,7 +26,10 @@ class AppRouter {
                                state.matchedLocation == '/register' || 
                                state.matchedLocation == '/class-code';
 
+      // If not logged in and trying to go to a protected route, send to login
       if (!loggedIn && !goingToAuth) return '/';
+      
+      // If logged in and trying to go to auth screens, send to main
       if (loggedIn && goingToAuth) return '/main';
 
       return null;
@@ -51,6 +55,11 @@ class AppRouter {
         path: '/main',
         name: 'main',
         builder: (context, state) => const MainScreen(),
+      ),
+      GoRoute(
+        path: '/notice',
+        name: 'notice',
+        builder: (context, state) => const NoticeScreen(),
       ),
       GoRoute(
         path: '/subjects',

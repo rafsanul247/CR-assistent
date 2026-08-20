@@ -1,24 +1,15 @@
+import 'package:cr_app/core/constants/colors.dart';
 import 'package:cr_app/core/router/app_router.dart';
 import 'package:cr_app/features/auth/presentation/manager/controller/auth_controller.dart';
 import 'package:cr_app/features/semesters/presentation/manager/controller/semesters_controller.dart';
 import 'package:cr_app/injection.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
-  // A small rotating palette so each semester card gets a distinct
-  // accent color instead of every card looking identical.
-  static const List<Color> _accentColors = [
-    Color(0xFF3B82F6), // blue
-    Color(0xFF8B5CF6), // violet
-    Color(0xFF10B981), // emerald
-    Color(0xFFF59E0B), // amber
-    Color(0xFFEC4899), // pink
-    Color(0xFF06B6D4), // cyan
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +17,7 @@ class HomeScreen extends StatelessWidget {
     final AuthController authController = Get.put(sl<AuthController>());
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0A),
+      backgroundColor: UColors.dark,
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -36,7 +27,7 @@ class HomeScreen extends StatelessWidget {
                 return const SliverFillRemaining(
                   child: Center(
                     child: CircularProgressIndicator(
-                      color: Color(0xFF3B82F6),
+                      color: UColors.primary,
                       strokeWidth: 2.5,
                     ),
                   ),
@@ -57,13 +48,11 @@ class HomeScreen extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
                 sliver: SliverList(
                   delegate: SliverChildBuilderDelegate(
-                        (context, index) {
+                    (context, index) {
                       final semester = controller.semesters[index];
-                      final color = _accentColors[index % _accentColors.length];
                       return _SemesterCard(
                         name: semester.name,
                         subjectCount: semester.subjectCount ?? 0,
-                        accentColor: color,
                         onTap: () => AppRouter.push(
                           '/subjects',
                           extra: {
@@ -98,7 +87,7 @@ class HomeScreen extends StatelessWidget {
                   Text(
                     "CR Assistant",
                     style: TextStyle(
-                      color: Colors.white,
+                      color: UColors.textPrimary,
                       fontSize: 26,
                       fontWeight: FontWeight.w700,
                       letterSpacing: -0.5,
@@ -108,7 +97,7 @@ class HomeScreen extends StatelessWidget {
                   Text(
                     "Your semesters",
                     style: TextStyle(
-                      color: Colors.grey.shade500,
+                      color: UColors.textSecondary,
                       fontSize: 14,
                     ),
                   ),
@@ -116,18 +105,18 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             Container(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
-                color: const Color(0xFF141414),
+                color: UColors.containerDark,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: const Color(0xFF262626)),
+                border: Border.all(color: UColors.borderDark),
               ),
-              child: const Icon(
-                Iconsax.notification,
-                color: Colors.white70,
-                size: 22,
-              ),
-            ),
+              child: IconButton(onPressed: () {
+                context.goNamed('notice');
+              }, icon: Icon(Iconsax.notification,
+                color: UColors.textPrimary,
+                size: 22,))
+            )
           ],
         ),
       ),
@@ -144,16 +133,16 @@ class HomeScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFFEF4444).withValues(alpha: 0.1),
+                color: UColors.error.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Iconsax.warning_2, color: Color(0xFFEF4444), size: 32),
+              child: const Icon(Iconsax.warning_2, color: UColors.error, size: 32),
             ),
             const SizedBox(height: 16),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+              style: TextStyle(color: UColors.textSecondary, fontSize: 14),
             ),
           ],
         ),
@@ -165,13 +154,11 @@ class HomeScreen extends StatelessWidget {
 class _SemesterCard extends StatelessWidget {
   final String name;
   final int subjectCount;
-  final Color accentColor;
   final VoidCallback onTap;
 
   const _SemesterCard({
     required this.name,
     required this.subjectCount,
-    required this.accentColor,
     required this.onTap,
   });
 
@@ -184,13 +171,12 @@ class _SemesterCard extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(18),
-          splashColor: accentColor.withValues(alpha: 0.08),
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFF141414),
+              color: UColors.containerDark,
               borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: const Color(0xFF262626)),
+              border: Border.all(color: UColors.borderDark),
             ),
             child: Row(
               children: [
@@ -198,14 +184,10 @@ class _SemesterCard extends StatelessWidget {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
+                    color: UColors.primary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(14),
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [accentColor, accentColor.withValues(alpha: 0.6)],
-                    ),
                   ),
-                  child: const Icon(Iconsax.book_1, color: Colors.white, size: 22),
+                  child: const Icon(Iconsax.book_1, color: UColors.primary, size: 22),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -215,35 +197,24 @@ class _SemesterCard extends StatelessWidget {
                       Text(
                         name,
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: UColors.textPrimary,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                            decoration: BoxDecoration(
-                              color: accentColor.withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              "$subjectCount subjects",
-                              style: TextStyle(
-                                color: accentColor,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ],
+                      Text(
+                        "$subjectCount subjects",
+                        style: TextStyle(
+                          color: UColors.primary,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ],
                   ),
                 ),
-                Icon(Iconsax.arrow_right_3, color: Colors.grey.shade600, size: 18),
+                const Icon(Iconsax.arrow_right_3, color: UColors.textSecondary, size: 18),
               ],
             ),
           ),
@@ -265,16 +236,16 @@ class _EmptyState extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: const Color(0xFF141414),
+              color: UColors.containerDark,
               shape: BoxShape.circle,
-              border: Border.all(color: const Color(0xFF262626)),
+              border: Border.all(color: UColors.borderDark),
             ),
-            child: Icon(Iconsax.document, color: Colors.grey.shade600, size: 36),
+            child: const Icon(Iconsax.document, color: UColors.textSecondary, size: 36),
           ),
           const SizedBox(height: 16),
           Text(
             "No semesters found",
-            style: TextStyle(color: Colors.grey.shade400, fontSize: 15, fontWeight: FontWeight.w500),
+            style: TextStyle(color: UColors.textSecondary, fontSize: 15, fontWeight: FontWeight.w500),
           ),
         ],
       ),

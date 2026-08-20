@@ -7,6 +7,7 @@ class ApiEndpoint {
   static const String register = '/auth/register';
   static const String login = '/auth/login';
   static const String myClassCode = '/auth/my-class-code';
+  static const String fcmToken = '/auth/fcm-token';
 
   // Semester / Subject / Resource
   static const String semesters = '/semesters';
@@ -17,6 +18,9 @@ class ApiEndpoint {
   static String resources(int subjectId) => '/subjects/$subjectId/resources';
   static String uploadResource(int subjectId) => '/subjects/$subjectId/resources';
   static String deleteResource(int resourceId) => '/resources/$resourceId';
+
+  // Notice
+  static const String notices = '/notices';
 
   // Chat
   static const String chatHistory = '/chat/history';

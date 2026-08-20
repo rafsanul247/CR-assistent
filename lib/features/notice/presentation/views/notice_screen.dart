@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:intl/intl.dart';
 
 class NoticeScreen extends StatelessWidget {
   const NoticeScreen({super.key});
@@ -20,52 +22,114 @@ class NoticeScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0A),
+      backgroundColor: UColors.dark,
       appBar: AppBar(
-        title: const Text("Notices"),
-        centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Iconsax.arrow_left_2, color: UColors.textPrimary),
+          onPressed: () => context.goNamed('main'),
+        ),
+        title: const Text("Notices", style: TextStyle(color: UColors.textPrimary, fontWeight: FontWeight.bold)),
+        centerTitle: true,
+        actions: [
+          IconButton(onPressed: () => noticeController.fetchNotices(), icon: const Icon(Iconsax.refresh, color: Colors.white, size: 20)),
+        ],
       ),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(20.w),
+          padding: EdgeInsets.symmetric(horizontal: 20.w),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (authController.isCR)
-                _buildClassCodeCard(noticeController),
-              
-              SizedBox(height: 24.h),
-              
+              if (authController.isCR) ...[
+                _buildClassCodeCard(context, noticeController),
+                SizedBox(height: 24.h),
+              ],
+              Text(
+                "RECENT NOTICES",
+                style: TextStyle(color: UColors.primary, fontSize: 12.sp, fontWeight: FontWeight.bold, letterSpacing: 1.2),
+              ),
+              SizedBox(height: 16.h),
               Expanded(
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Iconsax.notification_bing, color: Colors.grey.shade800, size: 48),
-                      SizedBox(height: 16.h),
-                      Text(
-                        "No notices yet",
-                        style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
+                child: Obx(() {
+                  if (noticeController.isLoading.value && noticeController.notices.isEmpty) {
+                    return const Center(child: CircularProgressIndicator(color: UColors.primary));
+                  }
+                  if (noticeController.notices.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Iconsax.notification_bing, color: UColors.textSecondary.withOpacity(0.3), size: 48),
+                          SizedBox(height: 16.h),
+                          const Text("No notices yet", style: TextStyle(color: UColors.textSecondary)),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
+                    );
+                  }
+                  return ListView.separated(
+                    itemCount: noticeController.notices.length,
+                    separatorBuilder: (context, index) => SizedBox(height: 12.h),
+                    itemBuilder: (context, index) {
+                      final notice = noticeController.notices[index];
+                      return _buildNoticeCard(notice);
+                    },
+                  );
+                }),
               ),
             ],
           ),
         ),
       ),
+      floatingActionButton: authController.isCR 
+        ? FloatingActionButton.extended(
+            onPressed: () => _showAddNoticeDialog(context, noticeController),
+            backgroundColor: UColors.primary,
+            icon: const Icon(Iconsax.add, color: Colors.white),
+            label: const Text("New Notice", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          )
+        : null,
     );
   }
 
-  Widget _buildClassCodeCard(NoticeController controller) {
+  Widget _buildNoticeCard(notice) {
+    return Container(
+      padding: EdgeInsets.all(16.w),
+      decoration: BoxDecoration(
+        color: UColors.containerDark,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: UColors.borderDark.withOpacity(0.5)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(notice.title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+              ),
+              Text(
+                DateFormat('dd MMM').format(notice.createdAt),
+                style: TextStyle(color: UColors.textSecondary, fontSize: 12.sp, fontWeight: FontWeight.w500),
+              ),
+            ],
+          ),
+          SizedBox(height: 8.h),
+          Text(notice.description, style: const TextStyle(color: UColors.textSecondary, fontSize: 13, height: 1.4)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildClassCodeCard(BuildContext context, NoticeController controller) {
     return Container(
       padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
-        color: const Color(0xFF141414),
+        color: UColors.containerDark,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: UColors.primary.withValues(alpha: 0.3)),
+        border: Border.all(color: UColors.primary.withOpacity(0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,63 +138,72 @@ class NoticeScreen extends StatelessWidget {
             children: [
               const Icon(Iconsax.personalcard, color: UColors.primary, size: 20),
               SizedBox(width: 8.w),
-              const Text(
-                "Your Batch Class Code",
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
-              ),
+              const Text("Class Code", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
             ],
           ),
-          SizedBox(height: 12.h),
-          const Text(
-            "Share this code with your students so they can enroll in this batch.",
-            style: TextStyle(color: Colors.white54, fontSize: 13),
-          ),
           SizedBox(height: 20.h),
-          Obx(() {
-            if (controller.isLoading.value) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            return Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 12.h),
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      controller.classCode.value,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: UColors.primary,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 4,
-                      ),
-                    ),
-                  ),
+          Obx(() => Row(
+            children: [
+              Expanded(
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 12.h),
+                  decoration: BoxDecoration(color: UColors.dark, borderRadius: BorderRadius.circular(12)),
+                  child: Text(controller.classCode.value, textAlign: TextAlign.center, style: const TextStyle(color: UColors.primary, fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: 4)),
                 ),
-                SizedBox(width: 12.w),
-                IconButton(
-                  onPressed: () {
-                    Clipboard.setData(ClipboardData(text: controller.classCode.value));
-                    Get.snackbar("Copied", "Class code copied to clipboard", 
-                      snackPosition: SnackPosition.BOTTOM,
-                      backgroundColor: UColors.primary,
-                      colorText: Colors.white,
-                    );
-                  },
-                  icon: const Icon(Iconsax.copy, color: Colors.white),
-                  style: IconButton.styleFrom(
-                    backgroundColor: const Color(0xFF262626),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    padding: EdgeInsets.all(12.w),
-                  ),
-                ),
-              ],
-            );
-          }),
+              ),
+              SizedBox(width: 12.w),
+              IconButton(
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: controller.classCode.value));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Class code copied to clipboard"), backgroundColor: UColors.primary),
+                  );
+                },
+                icon: const Icon(Iconsax.copy, color: Colors.white),
+                style: IconButton.styleFrom(backgroundColor: UColors.borderDark, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+              ),
+            ],
+          )),
+        ],
+      ),
+    );
+  }
+
+  void _showAddNoticeDialog(BuildContext context, NoticeController controller) {
+    final titleController = TextEditingController();
+    final descController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: UColors.containerDark,
+        title: const Text("Post New Notice", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(controller: titleController, style: const TextStyle(color: Colors.white), decoration: const InputDecoration(hintText: "Title", hintStyle: TextStyle(color: UColors.textSecondary))),
+            const SizedBox(height: 12),
+            TextField(controller: descController, maxLines: 3, style: const TextStyle(color: Colors.white), decoration: const InputDecoration(hintText: "Description", hintStyle: TextStyle(color: UColors.textSecondary))),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
+          ElevatedButton(
+            onPressed: () async {
+              if (titleController.text.isNotEmpty) {
+                final success = await controller.postNotice(titleController.text, descController.text);
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(success ? "Notice posted successfully" : "Failed to post notice"),
+                      backgroundColor: success ? UColors.success : UColors.error,
+                    ),
+                  );
+                }
+              }
+            },
+            child: const Text("Post"),
+          ),
         ],
       ),
     );

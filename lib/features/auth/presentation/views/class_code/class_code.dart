@@ -12,16 +12,15 @@ class ClassCode extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final RegistrationController controller = Get.find<RegistrationController>();
-    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0A),
+      backgroundColor: UColors.dark,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Iconsax.arrow_left_2, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => AppRouter.pop(),
         ),
       ),
       body: SafeArea(
@@ -33,27 +32,13 @@ class ClassCode extends StatelessWidget {
               SizedBox(height: 20.h),
               Container(
                 padding: EdgeInsets.all(16.w),
-                decoration: BoxDecoration(
-                  color: UColors.primary.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
+                decoration: BoxDecoration(color: UColors.primary.withOpacity(0.1), shape: BoxShape.circle),
                 child: const Icon(Iconsax.key, color: UColors.primary, size: 32),
               ),
               SizedBox(height: 24.h),
-              Text(
-                "Enter Class Code",
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              Text("Enter Class Code", style: TextStyle(color: UColors.textPrimary, fontSize: 26.sp, fontWeight: FontWeight.bold)),
               SizedBox(height: 12.h),
-              Text(
-                "Please enter the unique code provided by your CR to join your batch.",
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey.shade400,
-                ),
-              ),
+              const Text("Please enter the unique code provided by your CR to join your batch.", style: TextStyle(color: UColors.textSecondary)),
               SizedBox(height: 40.h),
               
               TextField(
@@ -63,36 +48,54 @@ class ClassCode extends StatelessWidget {
                 textAlign: TextAlign.center,
                 decoration: InputDecoration(
                   hintText: "######",
-                  hintStyle: TextStyle(color: Colors.grey.shade800),
+                  hintStyle: TextStyle(color: UColors.textSecondary.withOpacity(0.3)),
                   filled: true,
-                  fillColor: const Color(0xFF141414),
-                  contentPadding: EdgeInsets.symmetric(vertical: 20.h),
-                  border: OutlineInputBorder(
+                  fillColor: UColors.containerDark,
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                  focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide(color: Colors.grey.shade900),
+                    borderSide: const BorderSide(color: UColors.primary, width: 2),
                   ),
                 ),
+                onChanged: (_) => controller.errorMessage.value = '', // Clear error on change
+              ),
+              
+              Obx(() => controller.errorMessage.isNotEmpty 
+                ? Padding(
+                    padding: EdgeInsets.only(top: 16.h),
+                    child: Row(
+                      children: [
+                        const Icon(Iconsax.info_circle, color: UColors.error, size: 16),
+                        SizedBox(width: 8.w),
+                        Expanded(
+                          child: Text(
+                            controller.errorMessage.value,
+                            style: TextStyle(color: UColors.error, fontSize: 13.sp),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : const SizedBox.shrink()
               ),
               
               const Spacer(),
-              
               Obx(() => controller.isLoading.value 
-                ? const Center(child: CircularProgressIndicator(color: Colors.white))
+                ? const Center(child: CircularProgressIndicator(color: UColors.primary))
                 : SizedBox(
                     width: double.infinity,
                     height: 56.h,
                     child: ElevatedButton(
                       onPressed: () async {
                         if (controller.classCodeController.text.length < 4) {
-                          Get.snackbar("Error", "Please enter a valid class code");
+                          controller.errorMessage.value = "Short Code";
                           return;
                         }
                         final success = await controller.register();
                         if (success) {
                           AppRouter.go('/main');
-                        } else if (controller.errorMessage.value.isNotEmpty) {
-                          Get.snackbar("Error", controller.errorMessage.value);
                         }
+                        // If failed, controller.errorMessage is already populated and UI will show it
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: UColors.primary,
