@@ -28,7 +28,7 @@ class CrRegistrationCheckbox extends StatelessWidget {
 
 // CONTROLLER
 class RegiCheckBoxController extends GetxController {
-  var isSelected = true.obs;
+  var isSelected = false.obs;
 
   void toggleSelected() {
     isSelected.value = !isSelected.value;

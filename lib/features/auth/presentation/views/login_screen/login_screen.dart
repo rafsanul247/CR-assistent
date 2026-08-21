@@ -1,7 +1,4 @@
 import 'package:cr_app/core/constants/colors.dart';
-import 'package:cr_app/core/constants/sizes.dart';
-import 'package:cr_app/core/constants/texts.dart';
-import 'package:cr_app/core/helpers/device_helpers.dart';
 import 'package:cr_app/core/router/app_router.dart';
 import 'package:cr_app/features/auth/presentation/views/login_screen/controller/login_controller.dart';
 import 'package:flutter/material.dart';
@@ -9,11 +6,28 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
-class LoginScreen extends StatelessWidget {
-  LoginScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
-  final LoginController _controller = Get.put(LoginController());
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  late final LoginController _controller;
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = Get.put(LoginController());
+  }
+
+  @override
+  void dispose() {
+    Get.delete<LoginController>();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,11 +42,10 @@ class LoginScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Logo Container
                   Container(
-                    padding: EdgeInsets.all(20.w),
+                    padding: EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: UColors.primary.withOpacity(0.1),
+                      color: UColors.primary.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(Iconsax.user_square, color: UColors.primary, size: 64),
@@ -43,7 +56,7 @@ class LoginScreen extends StatelessWidget {
                     "Welcome Back",
                     style: TextStyle(
                       color: UColors.textPrimary,
-                      fontSize: 28.sp,
+                      fontSize: 28.spMin,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -51,12 +64,11 @@ class LoginScreen extends StatelessWidget {
                     "Login to manage your class easily",
                     style: TextStyle(
                       color: UColors.textSecondary,
-                      fontSize: 14.sp,
+                      fontSize: 14.spMin,
                     ),
                   ),
                   SizedBox(height: 40.h),
 
-                  // Email Field
                   _buildTextField(
                     controller: _controller.emailController,
                     hint: "Email Address",
@@ -65,7 +77,6 @@ class LoginScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 16.h),
 
-                  // Password Field
                   Obx(() => _buildTextField(
                     controller: _controller.passwordController,
                     hint: "Password",
@@ -85,7 +96,6 @@ class LoginScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 24.h),
 
-                  // Login Button
                   Obx(() => SizedBox(
                     width: double.infinity,
                     height: 56.h,
@@ -93,7 +103,9 @@ class LoginScreen extends StatelessWidget {
                       onPressed: _controller.isLoading.value ? null : () async {
                         if (_formKey.currentState!.validate()) {
                           final success = await _controller.login();
-                          if (success) AppRouter.go('/main');
+                          if (success) {
+                            AppRouter.go('/main');
+                          }
                         }
                       },
                       style: ElevatedButton.styleFrom(
@@ -115,7 +127,7 @@ class LoginScreen extends StatelessWidget {
                       const Text("Don't have an account?", style: TextStyle(color: UColors.textSecondary)),
                       TextButton(
                         onPressed: () => AppRouter.push('/register'),
-                        child: const Text("Register", style: TextStyle(color: UColors.primary, fontWeight: FontWeight.bold)),
+                        child: const Text("Register", style: TextStyle(fontSize: 14, color: UColors.primary, fontWeight: FontWeight.bold)),
                       ),
                     ],
                   ),

@@ -13,7 +13,7 @@ class NoticeModel extends NoticeEntity {
       id: json['id'] as int? ?? 0,
       title: json['title'] as String? ?? '',
       description: json['description'] as String? ?? '',
-      createdAt: DateTime.tryParse(json['createdAt']?.toString() ?? '') ?? DateTime.now(),
+      createdAt: (DateTime.tryParse(json['createdAt']?.toString() ?? '') ?? DateTime.now()).toLocal(),
     );
   }
 

@@ -7,11 +7,30 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
-class RegistrationScreen extends StatelessWidget {
-  RegistrationScreen({super.key});
+class RegistrationScreen extends StatefulWidget {
+  const RegistrationScreen({super.key});
 
-  final RegistrationController _controller = Get.put(RegistrationController());
+  @override
+  State<RegistrationScreen> createState() => _RegistrationScreenState();
+}
+
+class _RegistrationScreenState extends State<RegistrationScreen> {
+  late final RegistrationController _controller;
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize controller
+    _controller = Get.put(RegistrationController());
+  }
+
+  @override
+  void dispose() {
+    // Explicitly delete controller to clear data and free memory
+    Get.delete<RegistrationController>();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,15 +69,12 @@ class RegistrationScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 32.h),
 
-                // Name
                 _buildField("Full Name", Iconsax.user, _controller.usernameController, _controller.usernameValidate),
                 SizedBox(height: 16.h),
 
-                // University
                 _buildField("University Name", Iconsax.teacher, _controller.universityNameController, _controller.universityValidate),
                 SizedBox(height: 16.h),
 
-                // Dept & Batch Row
                 Row(
                   children: [
                     Expanded(child: _buildField("Dept.", Iconsax.hierarchy, _controller.deptNameController, _controller.deptValidate)),
@@ -68,11 +84,9 @@ class RegistrationScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 16.h),
 
-                // Email
                 _buildField("Email Address", Iconsax.sms, _controller.emailController, _controller.emailValidate),
                 SizedBox(height: 16.h),
 
-                // Password
                 Obx(() => _buildField(
                   "Password", 
                   Iconsax.lock, 
@@ -84,7 +98,6 @@ class RegistrationScreen extends StatelessWidget {
                 )),
                 SizedBox(height: 24.h),
 
-                // CR Checkbox
                 Container(
                   padding: EdgeInsets.all(4.w),
                   decoration: BoxDecoration(
@@ -95,7 +108,6 @@ class RegistrationScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 32.h),
 
-                // Submit Button
                 Obx(() => SizedBox(
                   width: double.infinity,
                   height: 56.h,
@@ -123,6 +135,17 @@ class RegistrationScreen extends StatelessWidget {
                   ),
                 )),
                 SizedBox(height: 24.h),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("Already have an account?", style: TextStyle(color: Colors.white70)),
+                    TextButton(
+                      onPressed: () => AppRouter.push('/'),
+                      child: const Text("Login", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: UColors.primary)),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),

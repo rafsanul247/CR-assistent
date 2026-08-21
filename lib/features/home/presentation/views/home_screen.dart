@@ -5,11 +5,19 @@ import 'package:cr_app/features/semesters/presentation/manager/controller/semest
 import 'package:cr_app/injection.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:go_router/go_router.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
+
+  static const List<Color> _accentColors = [
+    Color(0xFF3B82F6), // blue
+    Color(0xFF8B5CF6), // violet
+    Color(0xFF10B981), // emerald
+    Color(0xFFF59E0B), // amber
+    Color(0xFFEC4899), // pink
+    Color(0xFF06B6D4), // cyan
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -50,9 +58,11 @@ class HomeScreen extends StatelessWidget {
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
                       final semester = controller.semesters[index];
+                      final accentColor = _accentColors[index % _accentColors.length];
                       return _SemesterCard(
                         name: semester.name,
                         subjectCount: semester.subjectCount ?? 0,
+                        accentColor: accentColor,
                         onTap: () => AppRouter.push(
                           '/subjects',
                           extra: {
@@ -84,7 +94,7 @@ class HomeScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     "CR Assistant",
                     style: TextStyle(
                       color: UColors.textPrimary,
@@ -94,7 +104,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
+                  const Text(
                     "Your semesters",
                     style: TextStyle(
                       color: UColors.textSecondary,
@@ -111,11 +121,16 @@ class HomeScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: UColors.borderDark),
               ),
-              child: IconButton(onPressed: () {
-                context.goNamed('notice');
-              }, icon: Icon(Iconsax.notification,
-                color: UColors.textPrimary,
-                size: 22,))
+              child: IconButton(
+                onPressed: () {
+                  AppRouter.push('/notice');
+                },
+                icon: const Icon(
+                  Iconsax.notification,
+                  color: UColors.textPrimary,
+                  size: 22,
+                ),
+              ),
             )
           ],
         ),
@@ -142,7 +157,7 @@ class HomeScreen extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: TextStyle(color: UColors.textSecondary, fontSize: 14),
+              style: const TextStyle(color: UColors.textSecondary, fontSize: 14),
             ),
           ],
         ),
@@ -154,11 +169,13 @@ class HomeScreen extends StatelessWidget {
 class _SemesterCard extends StatelessWidget {
   final String name;
   final int subjectCount;
+  final Color accentColor;
   final VoidCallback onTap;
 
   const _SemesterCard({
     required this.name,
     required this.subjectCount,
+    required this.accentColor,
     required this.onTap,
   });
 
@@ -184,10 +201,10 @@ class _SemesterCard extends StatelessWidget {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: UColors.primary.withOpacity(0.1),
+                    color: accentColor,//.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: const Icon(Iconsax.book_1, color: UColors.primary, size: 22),
+                  child: Icon(Iconsax.book_1, color: UColors.white, size: 22),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -206,7 +223,7 @@ class _SemesterCard extends StatelessWidget {
                       Text(
                         "$subjectCount subjects",
                         style: TextStyle(
-                          color: UColors.primary,
+                          color: accentColor,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
@@ -243,7 +260,7 @@ class _EmptyState extends StatelessWidget {
             child: const Icon(Iconsax.document, color: UColors.textSecondary, size: 36),
           ),
           const SizedBox(height: 16),
-          Text(
+          const Text(
             "No semesters found",
             style: TextStyle(color: UColors.textSecondary, fontSize: 15, fontWeight: FontWeight.w500),
           ),

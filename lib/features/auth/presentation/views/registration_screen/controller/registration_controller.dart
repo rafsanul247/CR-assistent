@@ -18,12 +18,26 @@ class RegistrationController extends GetxController {
   final classCodeController = TextEditingController();
 
   var isObscureText = true.obs;
-
-  // ------------------ Reactive state for API call ------------------
   final isLoading = false.obs;
   final errorMessage = ''.obs;
 
-  // ------------------ Validators ------------------
+  @override
+  void onInit() {
+    super.onInit();
+    clearFields(); // Ensure fields are empty on start
+  }
+
+  void clearFields() {
+    usernameController.clear();
+    universityNameController.clear();
+    deptNameController.clear();
+    batchNameController.clear();
+    emailController.clear();
+    passwordController.clear();
+    classCodeController.clear();
+    errorMessage.value = '';
+  }
+
   String? usernameValidate(String? value) {
     if (value == null || value.isEmpty) return "Please enter your full name!";
     return null;
@@ -58,7 +72,6 @@ class RegistrationController extends GetxController {
 
   void passwordToggle() => isObscureText.value = !isObscureText.value;
 
-  // ------------------ API call ------------------
   Future<bool> register() async {
     isLoading.value = true;
     errorMessage.value = '';

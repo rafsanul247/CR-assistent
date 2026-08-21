@@ -23,6 +23,7 @@ class ClassCode extends StatelessWidget {
           onPressed: () => AppRouter.pop(),
         ),
       ),
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -48,7 +49,7 @@ class ClassCode extends StatelessWidget {
                 textAlign: TextAlign.center,
                 decoration: InputDecoration(
                   hintText: "######",
-                  hintStyle: TextStyle(color: UColors.textSecondary.withOpacity(0.3)),
+                  hintStyle: TextStyle(color: UColors.textSecondary.withValues(alpha: 0.3)),
                   filled: true,
                   fillColor: UColors.containerDark,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),

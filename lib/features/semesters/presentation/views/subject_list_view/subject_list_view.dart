@@ -1,5 +1,6 @@
 import 'package:cr_app/core/constants/colors.dart';
 import 'package:cr_app/core/router/app_router.dart';
+import 'package:cr_app/core/theme/widgets_theme/elevated_button_theme.dart';
 import 'package:cr_app/features/auth/presentation/manager/controller/auth_controller.dart';
 import 'package:cr_app/features/semesters/presentation/manager/controller/semesters_controller.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,15 @@ class SubjectListView extends StatefulWidget {
 class _SubjectListViewState extends State<SubjectListView> {
   final SemestersController controller = Get.find<SemestersController>();
   final AuthController authController = Get.find<AuthController>();
+
+  static const List<Color> _accentColors = [
+    Color(0xFF3B82F6), // blue
+    Color(0xFF8B5CF6), // violet
+    Color(0xFF10B981), // emerald
+    Color(0xFFF59E0B), // amber
+    Color(0xFFEC4899), // pink
+    Color(0xFF06B6D4), // cyan
+  ];
 
   @override
   void initState() {
@@ -67,8 +77,10 @@ class _SubjectListViewState extends State<SubjectListView> {
           itemCount: controller.subjects.length,
           itemBuilder: (context, index) {
             final subject = controller.subjects[index];
+            final accentColor = _accentColors[index % _accentColors.length];
             return _SubjectCard(
               subject: subject,
+              accentColor: accentColor,
               isCR: authController.isCR,
               onDelete: () => _showDeleteConfirm(subject.id),
               onTap: () => AppRouter.push('/resources', extra: {
@@ -101,7 +113,7 @@ class _SubjectListViewState extends State<SubjectListView> {
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: UColors.error),
+            style: UElevatedButtonTheme.radius12(context),
             onPressed: () async {
               final success = await controller.deleteSubject(widget.semesterId, subjectId);
               if (context.mounted) {
@@ -166,11 +178,18 @@ class _SubjectListViewState extends State<SubjectListView> {
 
 class _SubjectCard extends StatelessWidget {
   final dynamic subject;
+  final Color accentColor;
   final bool isCR;
   final VoidCallback onDelete;
   final VoidCallback onTap;
 
-  const _SubjectCard({required this.subject, required this.isCR, required this.onDelete, required this.onTap});
+  const _SubjectCard({
+    required this.subject,
+    required this.accentColor,
+    required this.isCR,
+    required this.onDelete,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -183,15 +202,28 @@ class _SubjectCard extends StatelessWidget {
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: Container(
           padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(color: UColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
-          child: const Icon(Iconsax.book_saved, color: UColors.primary),
+          decoration: BoxDecoration(
+            color: accentColor,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(Iconsax.book_saved, color: UColors.white),
         ),
-        title: Text(subject.name, style: const TextStyle(color: UColors.textPrimary, fontWeight: FontWeight.w600)),
-        subtitle: Text("${subject.resourceCount ?? 0} resources", style: const TextStyle(color: UColors.textSecondary)),
+        title: Text(
+          subject.name,
+          style: const TextStyle(color: UColors.textPrimary, fontWeight: FontWeight.w600),
+        ),
+        subtitle: Text(
+          "${subject.resourceCount ?? 0} resources",
+          style: TextStyle(color: accentColor, fontWeight: FontWeight.w500, fontSize: 12),
+        ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (isCR) IconButton(icon: const Icon(Iconsax.trash, color: UColors.error, size: 20), onPressed: onDelete),
+            if (isCR)
+              IconButton(
+                icon: const Icon(Iconsax.trash, color: UColors.error, size: 20),
+                onPressed: onDelete,
+              ),
             const Icon(Iconsax.arrow_right_3, color: UColors.textSecondary, size: 18),
           ],
         ),

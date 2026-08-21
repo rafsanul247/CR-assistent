@@ -111,7 +111,7 @@ class NoticeScreen extends StatelessWidget {
                 child: Text(notice.title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
               ),
               Text(
-                DateFormat('dd MMM').format(notice.createdAt),
+                DateFormat('dd MMM').format(notice.createdAt.toLocal()),
                 style: TextStyle(color: UColors.textSecondary, fontSize: 12.sp, fontWeight: FontWeight.w500),
               ),
             ],

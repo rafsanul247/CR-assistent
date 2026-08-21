@@ -1,5 +1,6 @@
 import 'package:cr_app/core/constants/colors.dart';
 import 'package:cr_app/core/router/app_router.dart';
+import 'package:cr_app/core/theme/widgets_theme/elevated_button_theme.dart';
 import 'package:cr_app/features/auth/presentation/manager/controller/auth_controller.dart';
 import 'package:cr_app/features/semesters/presentation/manager/controller/semesters_controller.dart';
 import 'package:file_picker/file_picker.dart';
@@ -90,7 +91,7 @@ class ResourceListView extends StatelessWidget {
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: UColors.error),
+            style: UElevatedButtonTheme.radius12(context),
             onPressed: () async {
               final success = await controller.deleteResource(subjectId, resourceId);
               if (context.mounted) {

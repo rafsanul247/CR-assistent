@@ -9,8 +9,8 @@ class UColors {
   static const Color accent = Color(0xFF60A5FA); 
 
   // Background colors
-  static const Color dark = Color(0xFF0F172A); 
-  static const Color containerDark = Color(0xFF1E293B); 
+  static const Color dark = Color(0xFF0A101E);
+  static const Color containerDark = Color(0xFF151D2B);
   static const Color black = Color(0xFF020617); 
 
   // Text colors

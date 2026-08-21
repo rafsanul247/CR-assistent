@@ -14,6 +14,18 @@ class LoginController extends GetxController {
   final isLoading = false.obs;
   final errorMessage = ''.obs;
 
+  @override
+  void onInit() {
+    super.onInit();
+    clearFields(); // Ensure fields are empty on start
+  }
+
+  void clearFields() {
+    emailController.clear();
+    passwordController.clear();
+    errorMessage.value = '';
+  }
+
   String? validateEmail(String? value) {
     if (value == null || value.isEmpty) return "Email cannot be empty!";
     if (!GetUtils.isEmail(value)) return "Enter a valid email address";
