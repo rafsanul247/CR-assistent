@@ -1,5 +1,5 @@
 import 'package:cr_app/core/constants/colors.dart';
-import 'package:cr_app/core/helpers/device_helpers.dart';
+import 'package:cr_app/core/utils/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -16,21 +16,21 @@ class ULogoAndTitle extends StatelessWidget {
       children: [
         IconButton(onPressed: () {
           context.pop();
-        }, icon: Icon(Icons.arrow_back_ios_new, size: 16)),
+        }, icon: const Icon(Icons.arrow_back_ios_new, size: 16, color: Colors.white)),
         6.horizontalSpace,
         Container(
           height: 30,
           width: 30,
           decoration: BoxDecoration(
-              color: UColors.grey,
+              color: UColors.primary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(6)
           ),
           child: Center(
-            child: Image.asset(context.isDark? "assets/icons/app_icon_white.png" : "assets/icons/app_icon_black.png", height: 20, width: 20, fit: BoxFit.cover,),
+            child: Image.asset(Constants.appLogo, height: 20, width: 20, fit: BoxFit.cover,),
           ),
         ),
         const SizedBox(width:8),
-        Text("CR Assistant", style: TextStyle(fontSize: 16.spMin, fontWeight: FontWeight.bold),)
+        Text(Constants.appName, style: TextStyle(fontSize: 16.spMin, fontWeight: FontWeight.bold, color: Colors.white),)
       ],
     );
   }

@@ -4,20 +4,8 @@ class Constants {
   // Private constructor to prevent instantiation
   Constants._();
 
-  // TODO: Add your app constants here
-  // Example:
-  static const String appName = 'CR Assistant';
-  // static const String apiBaseUrl = 'https://api.example.com';
-  // static const int maxRetryAttempts = 3;
-  // static const Duration connectionTimeout = Duration(seconds: 30);
-
-  // App Info
-  // static const String appVersion = '1.0.0';
-  // static const String appBuildNumber = '1';
-
-  // API Constants
-  // static const String apiKey = 'your_api_key_here';
-  // static const String apiSecret = 'your_api_secret_here';
+  static const String appName = 'CR Assist';
+  static const String appLogo = 'assets/icons/app_icon_white.png';
 
   // Storage Keys
   static const String keyAuthToken = 'auth_token';

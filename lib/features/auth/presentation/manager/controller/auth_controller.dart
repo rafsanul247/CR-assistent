@@ -90,6 +90,6 @@ class AuthController extends GetxController {
   Future<void> logout() async {
     await _useCase.logout();
     user.value = null;
-    AppRouter.go('/');
+    AppRouter.go('/login');
   }
 }

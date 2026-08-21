@@ -3,7 +3,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:label="cr_app"
+        android:label="CR Assist"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

@@ -1,5 +1,6 @@
 import 'package:cr_app/core/constants/colors.dart';
 import 'package:cr_app/core/router/app_router.dart';
+import 'package:cr_app/core/utils/constant.dart';
 import 'package:cr_app/features/auth/presentation/views/login_screen/controller/login_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -42,21 +43,24 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  // Logo
                   Container(
-                    padding: EdgeInsets.all(20),
+                    width: 100.w,
+                    height: 100.w,
+                    padding: EdgeInsets.all(15.w),
                     decoration: BoxDecoration(
-                      color: UColors.primary.withValues(alpha: 0.1),
-                      shape: BoxShape.circle,
+                      color: UColors.primary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(24),
                     ),
-                    child: const Icon(Iconsax.user_square, color: UColors.primary, size: 64),
+                    child: Image.asset(Constants.appLogo),
                   ),
                   SizedBox(height: 24.h),
                   
                   Text(
-                    "Welcome Back",
+                    "Welcome to ${Constants.appName}",
                     style: TextStyle(
                       color: UColors.textPrimary,
-                      fontSize: 28.spMin,
+                      fontSize: 28.sp,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -64,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     "Login to manage your class easily",
                     style: TextStyle(
                       color: UColors.textSecondary,
-                      fontSize: 14.spMin,
+                      fontSize: 14.sp,
                     ),
                   ),
                   SizedBox(height: 40.h),
@@ -127,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       const Text("Don't have an account?", style: TextStyle(color: UColors.textSecondary)),
                       TextButton(
                         onPressed: () => AppRouter.push('/register'),
-                        child: const Text("Register", style: TextStyle(fontSize: 14, color: UColors.primary, fontWeight: FontWeight.bold)),
+                        child: const Text("Register", style: TextStyle(color: UColors.primary, fontWeight: FontWeight.bold)),
                       ),
                     ],
                   ),

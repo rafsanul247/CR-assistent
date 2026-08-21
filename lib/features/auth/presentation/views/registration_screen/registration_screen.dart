@@ -1,5 +1,6 @@
 import 'package:cr_app/core/constants/colors.dart';
 import 'package:cr_app/core/router/app_router.dart';
+import 'package:cr_app/core/utils/constant.dart';
 import 'package:cr_app/features/auth/presentation/views/registration_screen/controller/registration_controller.dart';
 import 'package:cr_app/features/auth/presentation/views/registration_screen/widgets/cr_registration_checkbox.dart';
 import 'package:flutter/material.dart';
@@ -21,13 +22,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   @override
   void initState() {
     super.initState();
-    // Initialize controller
     _controller = Get.put(RegistrationController());
   }
 
   @override
   void dispose() {
-    // Explicitly delete controller to clear data and free memory
     Get.delete<RegistrationController>();
     super.dispose();
   }
@@ -52,6 +51,32 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Mini Logo
+                Row(
+                  children: [
+                    Container(
+                      width: 40.w,
+                      height: 40.w,
+                      padding: EdgeInsets.all(8.w),
+                      decoration: BoxDecoration(
+                        color: UColors.primary.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Image.asset(Constants.appLogo),
+                    ),
+                    SizedBox(width: 12.w),
+                    Text(
+                      Constants.appName,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 24.h),
+                
                 Text(
                   "Create Account",
                   style: TextStyle(
@@ -141,7 +166,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   children: [
                     const Text("Already have an account?", style: TextStyle(color: Colors.white70)),
                     TextButton(
-                      onPressed: () => AppRouter.push('/'),
+                      onPressed: () => AppRouter.pop(),
                       child: const Text("Login", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: UColors.primary)),
                     ),
                   ],

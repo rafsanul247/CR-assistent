@@ -9,6 +9,7 @@ import 'package:cr_app/features/semesters/presentation/views/subject_list_view/s
 import 'package:cr_app/features/semesters/presentation/views/resource_list_view/resource_list_view.dart';
 import 'package:cr_app/features/settings/presentation/views/about_cr_assistant/about_cr_assistant.dart';
 import 'package:cr_app/features/settings/presentation/views/profile/profile.dart';
+import 'package:cr_app/features/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -18,31 +19,39 @@ class AppRouter {
   static GoRouter get router => _router;
 
   static final GoRouter _router = GoRouter(
-    initialLocation: '/main',
+    initialLocation: '/splash',
     debugLogDiagnostics: false,
 
     redirect: (context, state) {
       final bool loggedIn = StorageService.containsKey(Constants.keyAuthToken);
-      final bool goingToAuth = state.matchedLocation == '/' || 
-                               state.matchedLocation == '/register' || 
-                               state.matchedLocation == '/class-code';
+      final bool isSplash = state.matchedLocation == '/splash';
+      final bool isAuth = state.matchedLocation == '/login' || 
+                         state.matchedLocation == '/register' || 
+                         state.matchedLocation == '/class-code';
 
-      if (!loggedIn && !goingToAuth) return '/';
-      if (loggedIn && goingToAuth) return '/main';
+      if (isSplash) return null; // Let splash finish
+
+      if (!loggedIn && !isAuth) return '/login';
+      if (loggedIn && isAuth) return '/main';
 
       return null;
     },
 
     routes: [
       GoRoute(
-        path: '/',
+        path: '/splash',
+        name: 'splash',
+        builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: '/login',
         name: 'login',
-        builder: (context, state) => LoginScreen(),
+        builder: (context, state) => const LoginScreen(),
       ),
       GoRoute(
         path: '/register',
         name: 'register',
-        builder: (context, state) => RegistrationScreen(),
+        builder: (context, state) => const RegistrationScreen(),
       ),
       GoRoute(
         path: '/class-code',
@@ -89,7 +98,7 @@ class AppRouter {
       GoRoute(
         path: '/about',
         name: 'about',
-        builder: (context, state) => AboutCrAssistant(),
+        builder: (context, state) => const AboutCrAssistant(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

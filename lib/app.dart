@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
           // Remove debug banner
           debugShowCheckedModeBanner: false,
           // App title (shows in task switcher)
-          title: 'CR Assistant',
+          title: 'CR Assist',
 
           theme: AppTheme.lightTheme(context),
 
