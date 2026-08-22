@@ -44,15 +44,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // Logo
-                  Container(
-                    width: 100.w,
-                    height: 100.w,
-                    padding: EdgeInsets.all(15.w),
-                    decoration: BoxDecoration(
-                      color: UColors.primary.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(24),
+                  CircleAvatar(
+                    radius: 45.r,
+                    backgroundColor: UColors.primary,
+                    child: CircleAvatar(
+                      radius: 42.r,
+                      backgroundImage: AssetImage(Constants.appLogo),
                     ),
-                    child: Image.asset(Constants.appLogo),
                   ),
                   SizedBox(height: 24.h),
                   
@@ -60,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     "Welcome to ${Constants.appName}",
                     style: TextStyle(
                       color: UColors.textPrimary,
-                      fontSize: 28.sp,
+                      fontSize: 28.spMin,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -68,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     "Login to manage your class easily",
                     style: TextStyle(
                       color: UColors.textSecondary,
-                      fontSize: 14.sp,
+                      fontSize: 14.spMin,
                     ),
                   ),
                   SizedBox(height: 40.h),
@@ -112,14 +110,16 @@ class _LoginScreenState extends State<LoginScreen> {
                           }
                         }
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: UColors.primary,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        elevation: 0,
-                      ),
+
                       child: _controller.isLoading.value 
-                        ? const CircularProgressIndicator(color: Colors.white)
+                        ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          color: Colors.blue,
+                        ),
+                      )
                         : const Text("Login", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                     ),
                   )),
@@ -131,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       const Text("Don't have an account?", style: TextStyle(color: UColors.textSecondary)),
                       TextButton(
                         onPressed: () => AppRouter.push('/register'),
-                        child: const Text("Register", style: TextStyle(color: UColors.primary, fontWeight: FontWeight.bold)),
+                        child: const Text("Register", style: TextStyle(fontSize: 14, color: UColors.primary, fontWeight: FontWeight.bold)),
                       ),
                     ],
                   ),

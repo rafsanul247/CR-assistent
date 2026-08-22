@@ -54,22 +54,20 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 // Mini Logo
                 Row(
                   children: [
-                    Container(
-                      width: 40.w,
-                      height: 40.w,
-                      padding: EdgeInsets.all(8.w),
-                      decoration: BoxDecoration(
-                        color: UColors.primary.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(10),
+                    CircleAvatar(
+                      radius: 25.r,
+                      backgroundColor: UColors.primary,
+                      child: CircleAvatar(
+                        radius: 22.r,
+                        backgroundImage: AssetImage(Constants.appLogo),
                       ),
-                      child: Image.asset(Constants.appLogo),
                     ),
                     SizedBox(width: 12.w),
                     Text(
                       Constants.appName,
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 18.sp,
+                        fontSize: 18.spMin,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -81,7 +79,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   "Create Account",
                   style: TextStyle(
                     color: UColors.textPrimary,
-                    fontSize: 28.sp,
+                    fontSize: 28.spMin,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -89,7 +87,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   "Join your batch and start collaborating",
                   style: TextStyle(
                     color: UColors.textSecondary,
-                    fontSize: 14.sp,
+                    fontSize: 14.spMin,
                   ),
                 ),
                 SizedBox(height: 32.h),
@@ -148,12 +146,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         }
                       }
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: UColors.primary,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                      elevation: 0,
-                    ),
+
                     child: _controller.isLoading.value 
                       ? const CircularProgressIndicator(color: Colors.white)
                       : const Text("Sign Up", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),

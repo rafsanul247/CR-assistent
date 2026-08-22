@@ -59,25 +59,16 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                width: 120.w,
-                height: 120.w,
-                padding: EdgeInsets.all(20.w),
-                decoration: BoxDecoration(
-                  color: UColors.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                child: Image.asset(
-                  Constants.appLogo,
-                  fit: BoxFit.contain,
-                ),
+              CircleAvatar(
+                radius: 50.r,
+                backgroundImage: AssetImage(Constants.appLogo),
               ),
               SizedBox(height: 24.h),
               Text(
                 Constants.appName,
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 32.sp,
+                  fontSize: 32.spMin,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 2,
                 ),
@@ -87,7 +78,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 "Your Academic Companion",
                 style: TextStyle(
                   color: UColors.textSecondary,
-                  fontSize: 14.sp,
+                  fontSize: 14.spMin,
                   letterSpacing: 1.2,
                 ),
               ),

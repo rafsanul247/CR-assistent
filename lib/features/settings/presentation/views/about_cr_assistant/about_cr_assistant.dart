@@ -48,7 +48,7 @@ class AboutCrAssistant extends StatelessWidget {
                     height: 120.r,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: UColors.primary.withOpacity(0.2), width: 2),
+                      border: Border.all(color: UColors.primary.withValues(alpha: 0.2), width: 2),
                     ),
                   ),
                   Container(
@@ -56,7 +56,7 @@ class AboutCrAssistant extends StatelessWidget {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: LinearGradient(
-                        colors: [UColors.primary, UColors.accent.withOpacity(0.5)],
+                        colors: [UColors.primary, UColors.accent.withValues(alpha: 0.5)],
                       ),
                     ),
                     child: CircleAvatar(
@@ -77,7 +77,7 @@ class AboutCrAssistant extends StatelessWidget {
               'Rafsanul Rifat',
               style: TextStyle(
                 color: UColors.textPrimary,
-                fontSize: 24.sp,
+                fontSize: 24.spMin,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 0.5,
               ),
@@ -86,9 +86,9 @@ class AboutCrAssistant extends StatelessWidget {
             Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
               decoration: BoxDecoration(
-                color: UColors.primary.withOpacity(0.1),
+                color: UColors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: UColors.primary.withOpacity(0.2)),
+                border: Border.all(color: UColors.primary.withValues(alpha: 0.2)),
               ),
               child: const Text(
                 'Full-Stack Developer',
@@ -165,7 +165,7 @@ class AboutCrAssistant extends StatelessWidget {
             Text(
               'CR Assistant • v1.0.0',
               style: TextStyle(
-                color: UColors.textSecondary.withOpacity(0.5),
+                color: UColors.textSecondary.withValues(alpha: 0.5),
                 fontSize: 12,
                 letterSpacing: 1,
               ),
@@ -224,7 +224,7 @@ class _ModernInfoCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: UColors.primary.withOpacity(0.1),
+              color: UColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: UColors.primary, size: 20),
@@ -233,8 +233,8 @@ class _ModernInfoCard extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: TextStyle(color: UColors.textSecondary, fontSize: 12.sp)),
-              Text(value, style: TextStyle(color: UColors.textPrimary, fontSize: 14.sp, fontWeight: FontWeight.bold)),
+              Text(label, style: TextStyle(color: UColors.textSecondary, fontSize: 12.spMin)),
+              Text(value, style: TextStyle(color: UColors.textPrimary, fontSize: 14.spMin, fontWeight: FontWeight.bold)),
             ],
           ),
         ],
@@ -276,7 +276,7 @@ class _BioSection extends StatelessWidget {
               SizedBox(width: 10.w),
               Text(
                 title,
-                style: TextStyle(color: Colors.white, fontSize: 16.sp, fontWeight: FontWeight.bold),
+                style: TextStyle(color: Colors.white, fontSize: 16.spMin, fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -285,7 +285,7 @@ class _BioSection extends StatelessWidget {
             content,
             style: TextStyle(
               color: UColors.textSecondary,
-              fontSize: 13.sp,
+              fontSize: 13.spMin,
               height: 1.5,
             ),
           ),

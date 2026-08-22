@@ -61,7 +61,7 @@ class NoticeScreen extends StatelessWidget {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Iconsax.notification_bing, color: UColors.textSecondary.withOpacity(0.3), size: 48),
+                          Icon(Iconsax.notification_bing, color: UColors.textSecondary.withValues(alpha: 0.3), size: 48),
                           SizedBox(height: 16.h),
                           const Text("No notices yet", style: TextStyle(color: UColors.textSecondary)),
                         ],
@@ -99,7 +99,7 @@ class NoticeScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: UColors.containerDark,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: UColors.borderDark.withOpacity(0.5)),
+        border: Border.all(color: UColors.borderDark.withValues(alpha: 0.5)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,7 +112,7 @@ class NoticeScreen extends StatelessWidget {
               ),
               Text(
                 DateFormat('dd MMM').format(notice.createdAt.toLocal()),
-                style: TextStyle(color: UColors.textSecondary, fontSize: 12.sp, fontWeight: FontWeight.w500),
+                style: TextStyle(color: UColors.textSecondary, fontSize: 12.spMin, fontWeight: FontWeight.w500),
               ),
             ],
           ),
@@ -129,7 +129,7 @@ class NoticeScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: UColors.containerDark,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: UColors.primary.withOpacity(0.2)),
+        border: Border.all(color: UColors.primary.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

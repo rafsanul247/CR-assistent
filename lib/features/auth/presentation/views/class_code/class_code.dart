@@ -33,11 +33,11 @@ class ClassCode extends StatelessWidget {
               SizedBox(height: 20.h),
               Container(
                 padding: EdgeInsets.all(16.w),
-                decoration: BoxDecoration(color: UColors.primary.withOpacity(0.1), shape: BoxShape.circle),
+                decoration: BoxDecoration(color: UColors.primary.withValues(alpha: 0.1), shape: BoxShape.circle),
                 child: const Icon(Iconsax.key, color: UColors.primary, size: 32),
               ),
               SizedBox(height: 24.h),
-              Text("Enter Class Code", style: TextStyle(color: UColors.textPrimary, fontSize: 26.sp, fontWeight: FontWeight.bold)),
+              Text("Enter Class Code", style: TextStyle(color: UColors.textPrimary, fontSize: 26.spMin, fontWeight: FontWeight.bold)),
               SizedBox(height: 12.h),
               const Text("Please enter the unique code provided by your CR to join your batch.", style: TextStyle(color: UColors.textSecondary)),
               SizedBox(height: 40.h),
@@ -71,7 +71,7 @@ class ClassCode extends StatelessWidget {
                         Expanded(
                           child: Text(
                             controller.errorMessage.value,
-                            style: TextStyle(color: UColors.error, fontSize: 13.sp),
+                            style: TextStyle(color: UColors.error, fontSize: 13.spMin),
                           ),
                         ),
                       ],

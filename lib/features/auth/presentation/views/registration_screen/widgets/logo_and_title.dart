@@ -22,7 +22,7 @@ class ULogoAndTitle extends StatelessWidget {
           height: 30,
           width: 30,
           decoration: BoxDecoration(
-              color: UColors.primary.withOpacity(0.1),
+              color: UColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(6)
           ),
           child: Center(

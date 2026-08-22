@@ -1,3 +1,4 @@
+import 'package:cr_app/core/common/logout_dialog.dart';
 import 'package:cr_app/core/constants/colors.dart';
 import 'package:cr_app/core/router/app_router.dart';
 import 'package:cr_app/features/auth/presentation/manager/controller/auth_controller.dart';
@@ -47,7 +48,7 @@ class ProfileScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           gradient: LinearGradient(
-                            colors: [UColors.primary, UColors.accent.withOpacity(0.5)],
+                            colors: [UColors.primary, UColors.accent.withValues(alpha: 0.5)],
                           ),
                         ),
                         child: CircleAvatar(
@@ -71,7 +72,7 @@ class ProfileScreen extends StatelessWidget {
                     user?.username ?? "No Name",
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 22.sp,
+                      fontSize: 22.spMin,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -79,14 +80,14 @@ class ProfileScreen extends StatelessWidget {
                     user?.email ?? "No Email",
                     style: TextStyle(
                       color: UColors.textSecondary,
-                      fontSize: 14.sp,
+                      fontSize: 14.spMin,
                     ),
                   ),
                   SizedBox(height: 8.h),
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
                     decoration: BoxDecoration(
-                      color: UColors.primary.withOpacity(0.1),
+                      color: UColors.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
@@ -131,7 +132,9 @@ class ProfileScreen extends StatelessWidget {
               width: double.infinity,
               height: 56.h,
               child: OutlinedButton.icon(
-                onPressed: () => authController.logout(),
+                onPressed: () {
+                  LogoutDialog.show(context);
+                },
                 icon: const Icon(Iconsax.logout, size: 20),
                 label: const Text("Logout from Account"),
                 style: OutlinedButton.styleFrom(
@@ -160,14 +163,14 @@ class ProfileScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: UColors.containerDark,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: UColors.borderDark.withOpacity(0.5)),
+        border: Border.all(color: UColors.borderDark.withValues(alpha: 0.5)),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: accentColor.withOpacity(0.1),
+              color: accentColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(14),
             ),
             child: Icon(icon, color: accentColor, size: 22),
@@ -180,14 +183,14 @@ class ProfileScreen extends StatelessWidget {
                 label,
                 style: TextStyle(
                   color: UColors.textSecondary,
-                  fontSize: 12.sp,
+                  fontSize: 12.spMin,
                 ),
               ),
               Text(
                 value,
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 15.sp,
+                  fontSize: 15.spMin,
                   fontWeight: FontWeight.w600,
                 ),
               ),

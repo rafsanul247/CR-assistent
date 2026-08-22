@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:cr_app/core/common/logout_dialog.dart';
 import 'package:cr_app/core/constants/colors.dart';
 import 'package:cr_app/core/storage/storage_service.dart';
 import 'package:cr_app/core/theme/widgets_theme/elevated_button_theme.dart';
@@ -94,7 +95,7 @@ class SettingsScreen extends StatelessWidget {
                   subtitle: "Sign out of your account on this device",
                   icon: Iconsax.logout,
                   isDestructive: true,
-                  onTap: () => _showLogoutDialog(context),
+                  onTap: () => LogoutDialog.show(context),
                 ),
               ],
             ),
@@ -105,160 +106,6 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  void _showLogoutDialog(BuildContext context) {
-    showGeneralDialog(
-      context: context,
-      barrierDismissible: true,
-      barrierLabel: 'Logout',
-      barrierColor: Colors.black.withValues(alpha: 0.6), // Dim Background
-      transitionDuration: const Duration(milliseconds: 250),
-      pageBuilder: (context, anim1, anim2) => const SizedBox(),
-      transitionBuilder: (context, anim1, anim2, child) {
-        // Smooth Scale + Fade Animation
-        return Transform.scale(
-          scale: CurvedAnimation(parent: anim1, curve: Curves.easeOutBack).value,
-          child: Opacity(
-            opacity: anim1.value,
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8), // Glass Effect
-              child: Dialog(
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                insetPadding: const EdgeInsets.symmetric(horizontal: 40),
-                child: Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: UColors.containerDark.withValues(alpha: 0.85),
-                    borderRadius: BorderRadius.circular(28),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.12),
-                      width: 1.5,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: UColors.error.withValues(alpha: 0.15),
-                        blurRadius: 30,
-                        spreadRadius: 2,
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Modern Glowing Icon Wrapper
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: UColors.error.withValues(alpha: 0.12),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: UColors.error.withValues(alpha: 0.3),
-                            width: 1.5,
-                          ),
-                        ),
-                        child: Icon(
-                          Icons.logout_rounded,
-                          color: UColors.error,
-                          size: 28,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Title
-                      const Text(
-                        "Log Out",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-
-                      // Description
-                      const Text(
-                        "Are you sure you want to log out from your account?",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: UColors.textSecondary,
-                          fontSize: 14,
-                          height: 1.4,
-                        ),
-                      ),
-                      const SizedBox(height: 28),
-
-                      // Modern Actions (Buttons Side by Side)
-                      Row(
-                        children: [
-                          // Cancel Button
-                          Expanded(
-                            child: OutlinedButton(
-                              style: UOutlinedButtonTheme.radius12(context),
-                              // style: OutlinedButton.styleFrom(
-                              //   padding: const EdgeInsets.symmetric(vertical: 14),
-                              //   side: BorderSide(
-                              //     color: Colors.white.withValues(alpha: 0.15),
-                              //   ),
-                              //   shape: RoundedRectangleBorder(
-                              //     borderRadius: BorderRadius.circular(8),
-                              //   ),
-                              // ),
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text(
-                                "Cancel",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-
-                          // Confirm Logout Button (Filled Gradient / Solid)
-                          Expanded(
-                            child: ElevatedButton(
-                              style: UElevatedButtonTheme.radius12(context),
-                              // style: ElevatedButton.styleFrom(
-                              //   padding: const EdgeInsets.symmetric(vertical: 14),
-                              //   backgroundColor: UColors.error,
-                              //   elevation: 4,
-                              //   shadowColor: UColors.error.withValues(alpha: 0.4),
-                              //   shape: RoundedRectangleBorder(
-                              //     borderRadius: BorderRadius.circular(8),
-                              //   ),
-                              // ),
-                              onPressed: () async {
-                                Navigator.pop(context);
-                                await StorageService.delete(Constants.keyAuthToken);
-                                await StorageService.delete(Constants.keyUserRole);
-                                await StorageService.delete(Constants.keyUserId);
-                                if (context.mounted) {
-                                  context.go('/');
-                                }
-                              },
-                              child: const Text(
-                                "Log Out",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
 }
 
 class _UserProfileCard extends StatelessWidget {

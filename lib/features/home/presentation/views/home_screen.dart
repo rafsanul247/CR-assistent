@@ -148,7 +148,7 @@ class HomeScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: UColors.error.withOpacity(0.1),
+                color: UColors.error.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(Iconsax.warning_2, color: UColors.error, size: 32),
@@ -201,7 +201,7 @@ class _SemesterCard extends StatelessWidget {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: accentColor,//.withValues(alpha: 0.1),
+                    color: accentColor,
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Icon(Iconsax.book_1, color: UColors.white, size: 22),
