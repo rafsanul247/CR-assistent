@@ -4,6 +4,7 @@ import 'package:cr_app/features/auth/presentation/manager/controller/auth_contro
 import 'package:cr_app/features/semesters/presentation/manager/controller/semesters_controller.dart';
 import 'package:cr_app/injection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
@@ -98,7 +99,7 @@ class HomeScreen extends StatelessWidget {
                     "CR Assistant",
                     style: TextStyle(
                       color: UColors.textPrimary,
-                      fontSize: 26,
+                      fontSize: 20,
                       fontWeight: FontWeight.w700,
                       letterSpacing: -0.5,
                     ),
@@ -111,11 +112,12 @@ class HomeScreen extends StatelessWidget {
                       fontSize: 14,
                     ),
                   ),
+                  25.verticalSpace,
                 ],
               ),
             ),
+
             Container(
-              padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
                 color: UColors.containerDark,
                 borderRadius: BorderRadius.circular(14),
