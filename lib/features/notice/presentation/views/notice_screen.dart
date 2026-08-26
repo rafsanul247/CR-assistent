@@ -1,5 +1,6 @@
 import 'package:cr_app/core/constants/colors.dart';
 import 'package:cr_app/features/auth/presentation/manager/controller/auth_controller.dart';
+import 'package:cr_app/features/notice/data/models/notice_model.dart';
 import 'package:cr_app/features/notice/presentation/manager/controller/notice_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,15 +10,54 @@ import 'package:go_router/go_router.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:intl/intl.dart';
 
-class NoticeScreen extends StatelessWidget {
+class NoticeScreen extends StatefulWidget {
   const NoticeScreen({super.key});
+
+  @override
+  State<NoticeScreen> createState() => _NoticeScreenState();
+}
+
+class _NoticeScreenState extends State<NoticeScreen> with RouteAware {
+  late final NoticeController noticeController;
+
+  @override
+  void initState() {
+    super.initState();
+    // Get.put (vs Get.find) so the controller & its polling timer are
+    // created the first time the screen is opened, and properly disposed
+    // when the screen is popped.
+    noticeController = Get.put(NoticeController());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route is PageRoute) {
+      AppRouterObservers.observer.subscribe(this, route);
+    }
+  }
+
+  @override
+  void dispose() {
+    AppRouterObservers.observer.unsubscribe(this);
+    super.dispose();
+  }
+
+  /// Called whenever the screen becomes visible again (e.g. after popping
+  /// back from another route). We do a silent refresh so any notice
+  /// posted while we were elsewhere appears without manual refresh.
+  @override
+  void didPopNext() {
+    noticeController.refreshNotices(silent: true);
+  }
 
   @override
   Widget build(BuildContext context) {
     final AuthController authController = Get.find<AuthController>();
-    final NoticeController noticeController = Get.put(NoticeController());
 
     if (authController.isCR) {
+      // Fire-and-forget — the card is reactive via Obx anyway.
       noticeController.fetchMyClassCode();
     }
 
@@ -33,7 +73,10 @@ class NoticeScreen extends StatelessWidget {
         title: const Text("Notices", style: TextStyle(color: UColors.textPrimary, fontWeight: FontWeight.bold)),
         centerTitle: true,
         actions: [
-          IconButton(onPressed: () => noticeController.fetchNotices(), icon: const Icon(Iconsax.refresh, color: Colors.white, size: 20)),
+          IconButton(
+            onPressed: () => noticeController.refreshNotices(),
+            icon: const Icon(Iconsax.refresh, color: Colors.white, size: 20),
+          ),
         ],
       ),
       body: SafeArea(
@@ -57,24 +100,43 @@ class NoticeScreen extends StatelessWidget {
                     return const Center(child: CircularProgressIndicator(color: UColors.primary));
                   }
                   if (noticeController.notices.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
+                    return RefreshIndicator(
+                      onRefresh: () => noticeController.refreshNotices(),
+                      color: UColors.primary,
+                      backgroundColor: UColors.containerDark,
+                      child: ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
                         children: [
-                          Icon(Iconsax.notification_bing, color: UColors.textSecondary.withValues(alpha: 0.3), size: 48),
-                          SizedBox(height: 16.h),
-                          const Text("No notices yet", style: TextStyle(color: UColors.textSecondary)),
+                          SizedBox(height: 80.h),
+                          Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Iconsax.notification_bing, color: UColors.textSecondary.withValues(alpha: 0.3), size: 48),
+                                SizedBox(height: 16.h),
+                                const Text("No notices yet", style: TextStyle(color: UColors.textSecondary)),
+                                SizedBox(height: 8.h),
+                                const Text("Pull down to refresh", style: TextStyle(color: UColors.textSecondary, fontSize: 12)),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     );
                   }
-                  return ListView.separated(
-                    itemCount: noticeController.notices.length,
-                    separatorBuilder: (context, index) => SizedBox(height: 12.h),
-                    itemBuilder: (context, index) {
-                      final notice = noticeController.notices[index];
-                      return _buildNoticeCard(notice);
-                    },
+                  return RefreshIndicator(
+                    onRefresh: () => noticeController.refreshNotices(),
+                    color: UColors.primary,
+                    backgroundColor: UColors.containerDark,
+                    child: ListView.separated(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      itemCount: noticeController.notices.length,
+                      separatorBuilder: (context, index) => SizedBox(height: 12.h),
+                      itemBuilder: (context, index) {
+                        final notice = noticeController.notices[index];
+                        return _buildNoticeCard(notice);
+                      },
+                    ),
                   );
                 }),
               ),
@@ -93,7 +155,7 @@ class NoticeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildNoticeCard(notice) {
+  Widget _buildNoticeCard(NoticeModel notice) {
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
@@ -208,4 +270,13 @@ class NoticeScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Singleton route observer used by StatefulWidgets to react to navigation
+/// events (e.g. didPopNext fires when the user returns to the subscribed
+/// route). We use it to silently re-fetch the notice list on screen resume.
+class AppRouterObservers {
+  AppRouterObservers._();
+  static final RouteObserver<PageRoute> observer =
+      RouteObserver<PageRoute>();
 }
