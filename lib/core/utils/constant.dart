@@ -13,6 +13,10 @@ class Constants {
   static const String keyUserRole = 'user_role';
   static const String keyUserName = 'user_name';
   static const String keyUserEmail = 'user_email';
+  static const String keyUserBatchId = 'user_batch_id';
+  static const String keyUserDeptName = 'user_dept_name';
+  static const String keyUserBatchName = 'user_batch_name';
+  static const String keyUserUniversityName = 'user_university_name';
 
   // API Keys
 }

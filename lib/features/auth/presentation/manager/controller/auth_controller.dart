@@ -32,13 +32,14 @@ class AuthController extends GetxController {
     if (token != null && role != null && id != null) {
       user.value = UserEntity(
         id: id,
-        username: '',
-        email: '',
+        username: StorageService.get<String>(Constants.keyUserName) ?? '',
+        email: StorageService.get<String>(Constants.keyUserEmail) ?? '',
         role: role,
-        batchId: 0,
-        deptName: '',
-        batchName: '',
-        universityName: '',
+        batchId: StorageService.get<int>(Constants.keyUserBatchId) ?? 0,
+        deptName: StorageService.get<String>(Constants.keyUserDeptName) ?? '',
+        batchName: StorageService.get<String>(Constants.keyUserBatchName) ?? '',
+        universityName:
+            StorageService.get<String>(Constants.keyUserUniversityName) ?? '',
       );
     }
   }

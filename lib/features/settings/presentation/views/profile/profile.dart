@@ -190,7 +190,7 @@ class ProfileScreen extends StatelessWidget {
                 value,
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 15.spMin,
+                  fontSize: 14.spMin,
                   fontWeight: FontWeight.w600,
                 ),
               ),

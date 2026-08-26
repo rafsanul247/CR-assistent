@@ -71,6 +71,12 @@ class AuthRepositoryImplement implements AuthRepository {
     await StorageService.delete(Constants.keyAuthToken);
     await StorageService.delete(Constants.keyUserId);
     await StorageService.delete(Constants.keyUserRole);
+    await StorageService.delete(Constants.keyUserName);
+    await StorageService.delete(Constants.keyUserEmail);
+    await StorageService.delete(Constants.keyUserBatchId);
+    await StorageService.delete(Constants.keyUserDeptName);
+    await StorageService.delete(Constants.keyUserBatchName);
+    await StorageService.delete(Constants.keyUserUniversityName);
     return const Right(null);
   }
 
@@ -94,6 +100,12 @@ class AuthRepositoryImplement implements AuthRepository {
     await StorageService.set(Constants.keyAuthToken, token);
     await StorageService.set(Constants.keyUserId, user.id);
     await StorageService.set(Constants.keyUserRole, user.role);
+    await StorageService.set(Constants.keyUserName, user.username);
+    await StorageService.set(Constants.keyUserEmail, user.email);
+    await StorageService.set(Constants.keyUserBatchId, user.batchId);
+    await StorageService.set(Constants.keyUserDeptName, user.deptName);
+    await StorageService.set(Constants.keyUserBatchName, user.batchName);
+    await StorageService.set(Constants.keyUserUniversityName, user.universityName);
     dioClient.setAuthToken(token);
   }
 
