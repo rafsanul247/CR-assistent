@@ -4,7 +4,9 @@ import 'features/notice/domain/repositories/notice_repository.dart';
 import 'features/notice/domain/usecases/notice_usecase.dart';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:cr_app/core/event_bus/notice_bus.dart';
 import 'package:cr_app/core/network/dio_client.dart';
 import 'package:cr_app/core/network/network_info.dart';
 
@@ -22,6 +24,9 @@ import 'package:cr_app/features/semesters/domain/repositories/semesters_reposito
 import 'package:cr_app/features/semesters/domain/usecases/semesters_usecase.dart';
 import 'package:cr_app/features/semesters/presentation/manager/controller/semesters_controller.dart';
 
+// Home Feature
+import 'package:cr_app/features/home/presentation/manager/controller/home_controller.dart';
+
 final sl = GetIt.instance;
 
 Future<void> init() async {
@@ -31,6 +36,10 @@ Future<void> init() async {
   sl.registerLazySingleton(() => Connectivity());
   sl.registerLazySingleton(() => DioClient());
   sl.registerLazySingleton(() => NetworkInfo(sl()));
+
+  // Event bus — singleton so all controllers share the same broadcast
+  // channel for notice events.
+  Get.put(NoticeBus(), permanent: true);
 
   // Auth Feature
   sl.registerLazySingleton<AuthDataSource>(
@@ -58,6 +67,9 @@ Future<void> init() async {
   );
   sl.registerLazySingleton(() => SemestersUseCase(repository: sl()));
   sl.registerLazySingleton(() => SemestersController());
+
+  // Home Feature
+  sl.registerLazySingleton(() => HomeController());
 }
 
 Future<void> _setUpNotice() async {  // Repositories

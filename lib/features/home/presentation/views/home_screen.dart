@@ -1,6 +1,7 @@
 import 'package:cr_app/core/constants/colors.dart';
 import 'package:cr_app/core/router/app_router.dart';
 import 'package:cr_app/features/auth/presentation/manager/controller/auth_controller.dart';
+import 'package:cr_app/features/home/presentation/manager/controller/home_controller.dart';
 import 'package:cr_app/features/semesters/presentation/manager/controller/semesters_controller.dart';
 import 'package:cr_app/injection.dart';
 import 'package:flutter/material.dart';
@@ -24,13 +25,14 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final SemestersController controller = Get.put(sl<SemestersController>());
     final AuthController authController = Get.put(sl<AuthController>());
+    final HomeController homeController = Get.put(sl<HomeController>());
 
     return Scaffold(
       backgroundColor: UColors.dark,
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            _buildHeader(context, authController),
+            _buildHeader(context, authController, homeController),
             Obx(() {
               if (controller.isLoading.value) {
                 return const SliverFillRemaining(
@@ -84,7 +86,11 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context, AuthController authController) {
+  Widget _buildHeader(
+    BuildContext context,
+    AuthController authController,
+    HomeController homeController,
+  ) {
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
@@ -123,15 +129,51 @@ class HomeScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: UColors.borderDark),
               ),
-              child: IconButton(
-                onPressed: () {
-                  AppRouter.push('/notice');
-                },
-                icon: const Icon(
-                  Iconsax.notification,
-                  color: UColors.textPrimary,
-                  size: 22,
-                ),
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      homeController.clearUnreadBadge();
+                      AppRouter.push('/notice');
+                    },
+                    icon: const Icon(
+                      Iconsax.notification,
+                      color: UColors.textPrimary,
+                      size: 22,
+                    ),
+                  ),
+                  Obx(() {
+                    final count = homeController.unreadNoticeCount.value;
+                    if (count <= 0) return const SizedBox.shrink();
+                    final label = count > 9 ? '9+' : '$count';
+                    return Positioned(
+                      right: 6,
+                      top: 6,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 5,
+                          vertical: 2,
+                        ),
+                        constraints: const BoxConstraints(minWidth: 18),
+                        decoration: BoxDecoration(
+                          color: UColors.primary,
+                          borderRadius: BorderRadius.circular(9),
+                        ),
+                        child: Text(
+                          label,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            height: 1.1,
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                ],
               ),
             )
           ],
