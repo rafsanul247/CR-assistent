@@ -44,29 +44,37 @@ class ResourceListView extends StatelessWidget {
         centerTitle: true,
       ),
       body: Obx(() {
-        if (controller.isLoading.value) {
+        if (controller.isLoading.value && controller.resources.isEmpty) {
           return const Center(child: CircularProgressIndicator(color: UColors.primary));
         }
 
-        if (controller.errorMessage.isNotEmpty) {
+        if (controller.errorMessage.isNotEmpty && controller.resources.isEmpty) {
           return Center(child: Text(controller.errorMessage.value, style: const TextStyle(color: UColors.error)));
         }
 
-        if (controller.resources.isEmpty) {
-          return const Center(child: Text("No resources found", style: TextStyle(color: UColors.textSecondary)));
-        }
-
-        return ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: controller.resources.length,
-          itemBuilder: (context, index) {
-            final resource = controller.resources[index];
-            return _ResourceCard(
-              resource: resource,
-              isCR: authController.isCR,
-              onDelete: () => _showDeleteResourceConfirm(context, controller, resource.id),
-            );
-          },
+        return RefreshIndicator(
+          onRefresh: () => controller.fetchResources(subjectId),
+          color: UColors.primary,
+          backgroundColor: UColors.containerDark,
+          child: controller.resources.isEmpty
+              ? ListView(
+                  children: [
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.3),
+                    const Center(child: Text("No resources found", style: TextStyle(color: UColors.textSecondary))),
+                  ],
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: controller.resources.length,
+                  itemBuilder: (context, index) {
+                    final resource = controller.resources[index];
+                    return _ResourceCard(
+                      resource: resource,
+                      isCR: authController.isCR,
+                      onDelete: () => _showDeleteResourceConfirm(context, controller, resource.id),
+                    );
+                  },
+                ),
         );
       }),
       floatingActionButton: Obx(() {

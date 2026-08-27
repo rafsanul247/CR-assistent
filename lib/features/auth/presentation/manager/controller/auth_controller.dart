@@ -1,3 +1,4 @@
+import 'package:cr_app/core/push/fcm_service.dart';
 import 'package:cr_app/core/storage/storage_service.dart';
 import 'package:cr_app/core/utils/constant.dart';
 import 'package:cr_app/core/router/app_router.dart';
@@ -8,6 +9,7 @@ import 'package:get/get.dart';
 
 class AuthController extends GetxController {
   final AuthUseCase _useCase = sl<AuthUseCase>();
+  final FcmService _fcmService = sl<FcmService>();
 
   final Rxn<UserEntity> user = Rxn<UserEntity>();
   final RxBool isLoading = false.obs;
@@ -52,6 +54,7 @@ class AuthController extends GetxController {
       (failure) => errorMessage.value = failure.message,
       (userData) {
         user.value = userData;
+        _fcmService.syncTokenWithBackend();
         AppRouter.go('/main'); 
       },
     );
@@ -82,6 +85,7 @@ class AuthController extends GetxController {
       (failure) => errorMessage.value = failure.message,
       (userData) {
         user.value = userData;
+        _fcmService.syncTokenWithBackend();
         AppRouter.go('/main');
       },
     );

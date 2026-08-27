@@ -30,57 +30,63 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: UColors.dark,
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            _buildHeader(context, authController, homeController),
-            Obx(() {
-              if (controller.isLoading.value) {
-                return const SliverFillRemaining(
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      color: UColors.primary,
-                      strokeWidth: 2.5,
+        child: RefreshIndicator(
+          onRefresh: () => controller.fetchSemesters(),
+          color: UColors.primary,
+          backgroundColor: UColors.containerDark,
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              _buildHeader(context, authController, homeController),
+              Obx(() {
+                if (controller.isLoading.value && controller.semesters.isEmpty) {
+                  return const SliverFillRemaining(
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: UColors.primary,
+                        strokeWidth: 2.5,
+                      ),
+                    ),
+                  );
+                }
+
+                if (controller.errorMessage.isNotEmpty && controller.semesters.isEmpty) {
+                  return SliverFillRemaining(
+                    child: _buildErrorState(controller.errorMessage.value),
+                  );
+                }
+
+                if (controller.semesters.isEmpty) {
+                  return const SliverFillRemaining(child: _EmptyState());
+                }
+
+                return SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final semester = controller.semesters[index];
+                        final accentColor = _accentColors[index % _accentColors.length];
+                        return _SemesterCard(
+                          name: semester.name,
+                          subjectCount: semester.subjectCount ?? 0,
+                          accentColor: accentColor,
+                          onTap: () => AppRouter.push(
+                            '/subjects',
+                            extra: {
+                              'semesterId': semester.id,
+                              'semesterName': semester.name,
+                            },
+                          ),
+                        );
+                      },
+                      childCount: controller.semesters.length,
                     ),
                   ),
                 );
-              }
-
-              if (controller.errorMessage.isNotEmpty) {
-                return SliverFillRemaining(
-                  child: _buildErrorState(controller.errorMessage.value),
-                );
-              }
-
-              if (controller.semesters.isEmpty) {
-                return const SliverFillRemaining(child: _EmptyState());
-              }
-
-              return SliverPadding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final semester = controller.semesters[index];
-                      final accentColor = _accentColors[index % _accentColors.length];
-                      return _SemesterCard(
-                        name: semester.name,
-                        subjectCount: semester.subjectCount ?? 0,
-                        accentColor: accentColor,
-                        onTap: () => AppRouter.push(
-                          '/subjects',
-                          extra: {
-                            'semesterId': semester.id,
-                            'semesterName': semester.name,
-                          },
-                        ),
-                      );
-                    },
-                    childCount: controller.semesters.length,
-                  ),
-                ),
-              );
-            }),
-          ],
+              }),
+            ],
+          ),
         ),
       ),
     );

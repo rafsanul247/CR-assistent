@@ -1,3 +1,4 @@
+import 'package:cr_app/core/push/fcm_service.dart';
 import 'features/notice/data/data_sources/notice_data_source.dart';
 import 'features/notice/data/repositories/notice_repository_implement.dart';
 import 'features/notice/domain/repositories/notice_repository.dart';
@@ -36,6 +37,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => Connectivity());
   sl.registerLazySingleton(() => DioClient());
   sl.registerLazySingleton(() => NetworkInfo(sl()));
+  sl.registerLazySingleton(() => FcmService(sl()));
 
   // Event bus — singleton so all controllers share the same broadcast
   // channel for notice events.

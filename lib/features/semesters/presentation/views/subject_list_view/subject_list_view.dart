@@ -60,35 +60,43 @@ class _SubjectListViewState extends State<SubjectListView> {
         centerTitle: true,
       ),
       body: Obx(() {
-        if (controller.isLoading.value) {
+        if (controller.isLoading.value && controller.subjects.isEmpty) {
           return const Center(child: CircularProgressIndicator(color: UColors.primary));
         }
 
-        if (controller.errorMessage.isNotEmpty) {
+        if (controller.errorMessage.isNotEmpty && controller.subjects.isEmpty) {
           return Center(child: Text(controller.errorMessage.value, style: const TextStyle(color: UColors.error)));
         }
 
-        if (controller.subjects.isEmpty) {
-          return const Center(child: Text("No subjects found", style: TextStyle(color: UColors.textSecondary)));
-        }
-
-        return ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: controller.subjects.length,
-          itemBuilder: (context, index) {
-            final subject = controller.subjects[index];
-            final accentColor = _accentColors[index % _accentColors.length];
-            return _SubjectCard(
-              subject: subject,
-              accentColor: accentColor,
-              isCR: authController.isCR,
-              onDelete: () => _showDeleteConfirm(subject.id),
-              onTap: () => AppRouter.push('/resources', extra: {
-                'subjectId': subject.id,
-                'subjectName': subject.name,
-              }),
-            );
-          },
+        return RefreshIndicator(
+          onRefresh: () => controller.fetchSubjects(widget.semesterId),
+          color: UColors.primary,
+          backgroundColor: UColors.containerDark,
+          child: controller.subjects.isEmpty
+              ? ListView(
+                  children: [
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.3),
+                    const Center(child: Text("No subjects found", style: TextStyle(color: UColors.textSecondary))),
+                  ],
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: controller.subjects.length,
+                  itemBuilder: (context, index) {
+                    final subject = controller.subjects[index];
+                    final accentColor = _accentColors[index % _accentColors.length];
+                    return _SubjectCard(
+                      subject: subject,
+                      accentColor: accentColor,
+                      isCR: authController.isCR,
+                      onDelete: () => _showDeleteConfirm(subject.id),
+                      onTap: () => AppRouter.push('/resources', extra: {
+                        'subjectId': subject.id,
+                        'subjectName': subject.name,
+                      }),
+                    );
+                  },
+                ),
         );
       }),
       floatingActionButton: Obx(() {

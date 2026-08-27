@@ -14,7 +14,7 @@ Future<void> main() async {
   // Errors here are non-fatal so a missing Firebase config doesn't block
   // local development.
   try {
-    await FcmService().init();
+    await injection.sl<FcmService>().init();
   } catch (e, st) {
     debugPrint('FCM init failed: $e\n$st');
   }

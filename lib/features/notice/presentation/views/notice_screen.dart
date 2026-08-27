@@ -95,7 +95,10 @@ class NoticeScreen extends StatelessWidget {
                       separatorBuilder: (context, index) => SizedBox(height: 12.h),
                       itemBuilder: (context, index) {
                         final notice = noticeController.notices[index];
-                        return _buildNoticeCard(notice);
+                        // Highlight the latest notice (first in list)
+                        final isNew = index == 0 && 
+                            DateTime.now().difference(notice.createdAt).inHours < 24;
+                        return _buildNoticeCard(notice, isNew: isNew);
                       },
                     ),
                   );
@@ -116,32 +119,86 @@ class NoticeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildNoticeCard(NoticeModel notice) {
+  Widget _buildNoticeCard(NoticeModel notice, {bool isNew = false}) {
     return Container(
-      padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: UColors.containerDark,
+        color: isNew ? null : UColors.containerDark,
+        gradient: isNew ? LinearGradient(
+          colors: [
+            UColors.primary.withValues(alpha: 0.15),
+            UColors.accent.withValues(alpha: 0.05),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ) : null,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: UColors.borderDark.withValues(alpha: 0.5)),
+        border: Border.all(
+          color: isNew ? UColors.primary.withValues(alpha: 0.8) : UColors.borderDark.withValues(alpha: 0.5),
+          width: isNew ? 1.5 : 1,
+        ),
+        boxShadow: isNew ? [
+          BoxShadow(
+            color: UColors.primary.withValues(alpha: 0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          )
+        ] : null,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: IntrinsicHeight(
+          child: Row(
             children: [
+              if (isNew) 
+                Container(
+                  width: 4,
+                  color: UColors.primary,
+                ),
               Expanded(
-                child: Text(notice.title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-              ),
-              Text(
-                DateFormat('dd MMM').format(notice.createdAt.toLocal()),
-                style: TextStyle(color: UColors.textSecondary, fontSize: 12.spMin, fontWeight: FontWeight.w500),
+                child: Padding(
+                  padding: EdgeInsets.all(16.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          if (isNew) ...[
+                            Container(
+                              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                              margin: EdgeInsets.only(right: 8.w),
+                              decoration: BoxDecoration(
+                                color: UColors.primary,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                "NEW",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10.sp,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                          Expanded(
+                            child: Text(notice.title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                          ),
+                          Text(
+                            DateFormat('dd MMM').format(notice.createdAt.toLocal()),
+                            style: TextStyle(color: UColors.textSecondary, fontSize: 12.spMin, fontWeight: FontWeight.w500),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 8.h),
+                      Text(notice.description, style: const TextStyle(color: UColors.textSecondary, fontSize: 13, height: 1.4)),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),
-          SizedBox(height: 8.h),
-          Text(notice.description, style: const TextStyle(color: UColors.textSecondary, fontSize: 13, height: 1.4)),
-        ],
+        ),
       ),
     );
   }
